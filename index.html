@@ -1073,7 +1073,6 @@ function saveSessionOnly() {
 
 function saveSession(showToast) {
   var date = document.getElementById('l-date').value;
-  var bw = document.getElementById('l-bw').value;
   if (!date) { toast('Select a date','err'); return; }
   var s = {
     date:date, bw:parseFloat(bw)||null, type:getSessType(),
