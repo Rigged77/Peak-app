@@ -518,16 +518,16 @@ textarea{resize:none;height:80px;font-size:14px;line-height:1.5}
         <div style="display:flex;gap:8px;align-items:center">
           <select id="s-ex" style="width:180px;font-size:13px;padding:8px 32px 8px 12px">
             <optgroup label="UPPER 1 - PUSH">
-              <option>Bench Press</option><option>Cable Push Machine</option><option>Military Press</option><option>Lateral Raises</option><option>Cable Preacher Curls</option><option>Hammer Curls</option><option>Chest Supported Row</option><option>Tricep Pushdowns</option>
+              <option>Incline Barbell Press</option><option>Cable Push Machine</option><option>Machine OHP</option><option>Lateral Raises</option><option>Cable Preacher Curls</option><option>Hammer Curls</option><option>Chest Supported Row</option><option>Tricep Pushdowns</option>
             </optgroup>
             <optgroup label="LOWER 1 - QUADS">
-              <option>Squats</option><option>Leg Extensions</option><option>Barbell Sissy Squats</option><option>Tibialis Raises</option><option>Cable Crunches</option><option>Decline Crunches</option>
+              <option>Hack Squat</option><option>Leg Extensions</option><option>Barbell Sissy Squats</option><option>Tibialis Raises</option><option>Cable Crunches</option><option>Decline Crunches</option>
             </optgroup>
             <optgroup label="UPPER 2 - PULL">
-              <option>Barbell Row</option><option>FW Lat Pulldown</option><option>Shrugs</option><option>Rear Delts</option><option>Incline Barbell Press</option><option>Lateral Raises</option><option>Overhead Triceps</option>
+              <option>Chest Supported Row</option><option>FW Lat Pulldown</option><option>Shrugs</option><option>Rear Delts</option><option>Incline Barbell Press</option><option>Lateral Raises</option><option>Overhead Triceps</option>
             </optgroup>
             <optgroup label="LOWER 2 - POSTERIOR">
-              <option>RDL</option><option>Leg Curls</option><option>Leg Press</option><option>Calves</option><option>Cable Crunches</option><option>Decline Crunches</option>
+              <option>RDL</option><option>Leg Curls</option><option>Laying Leg Curls</option><option>Calves</option><option>Cable Crunches</option><option>Decline Crunches</option>
             </optgroup>
           </select>
           <button class="btn btn-fire btn-sm" onclick="addEx()">Add</button>
@@ -1074,8 +1074,10 @@ function saveSessionOnly() {
 function saveSession(showToast) {
   var date = document.getElementById('l-date').value;
   if (!date) { toast('Select a date','err'); return; }
+  var bwEl = document.getElementById('l-bw');
+  var bw = bwEl ? parseFloat(bwEl.value)||null : null;
   var s = {
-    date:date, bw:parseFloat(bw)||null, type:getSessType(),
+    date:date, bw:bw, type:getSessType(),
     duration:parseInt(document.getElementById('l-dur').value)||65,
     intensity:parseInt(document.getElementById('l-int').value)||8,
     notes:document.getElementById('l-notes').value, ts:Date.now()
