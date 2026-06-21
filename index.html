@@ -506,14 +506,11 @@ textarea{resize:none;height:80px;font-size:14px;line-height:1.5}
   <div id="panel-log">
     <div class="pad">
 
-      <!-- Step 1: Date -->
-      <div class="ig">
-        <span class="lbl">Date</span>
-        <input type="date" id="l-date" onchange="onDateSelected()">
-      </div>
+      <!-- Date hidden but still tracked -->
+      <input type="date" id="l-date" style="display:none">
 
-      <!-- Step 2: Session type — shown after date selected -->
-      <div id="sess-type-step" style="display:none">
+      <!-- Session type shown immediately -->
+      <div id="sess-type-step">
         <div class="ctitle" style="margin:0 0 10px">Select Session</div>
         <div class="session-type-grid">
           <div class="sess-type-card on" data-v="Upper 1 (Push)" onclick="selSessType(this)">
@@ -532,7 +529,7 @@ textarea{resize:none;height:80px;font-size:14px;line-height:1.5}
       </div>
 
       <!-- Step 3: Session details — shown after session type selected -->
-      <div id="sess-detail-step" style="display:none">
+      <div id="sess-detail-step">
         <div class="r2">
           <div><span class="lbl">Duration min</span><input type="number" id="l-dur" placeholder="65"></div>
           <div><span class="lbl">Intensity 1-10</span><input type="number" id="l-int" placeholder="8" min="1" max="10"></div>
@@ -544,7 +541,7 @@ textarea{resize:none;height:80px;font-size:14px;line-height:1.5}
     </div>
 
     <!-- Step 4: Exercise list — shown after session type selected -->
-    <div id="ex-list-step" style="display:none">
+    <div id="ex-list-step">
       <div style="padding:0 14px;margin-bottom:8px">
         <div class="ctitle" style="margin:0">Exercises</div>
         <div style="font-family:'DM Mono',monospace;font-size:11px;color:var(--ink3);margin-top:3px">Tap an exercise to log sets — save each one individually</div>
@@ -960,6 +957,7 @@ function init() {
   updBWHint();
   updCalRemaining();
   updNextSession();
+  buildExerciseList();
   refreshHome();
 }
 
@@ -977,7 +975,7 @@ function navGo(name, el) {
   if (di) di.classList.add('active');
   if (name==='home') refreshHome();
   if (name==='home') refreshHome();
-  if (name==='train') refreshDash();
+  if (name==='train') { refreshDash(); buildExerciseList(); }
   if (name==='steps') renderStepsHist();
   if (name==='weight') renderWeightScreen();
   if (name==='data') renderTables();
@@ -1046,17 +1044,7 @@ function selSessType(el) {
 }
 
 function onDateSelected() {
-  var date = document.getElementById('l-date').value;
-  if (!date) return;
-  document.getElementById('sess-type-step').style.display = 'block';
-  // Pre-select next session
-  var next = getNextSession();
-  document.querySelectorAll('.sess-type-card').forEach(function(c){
-    c.classList.toggle('on', c.dataset.v === next);
-  });
-  document.getElementById('sess-detail-step').style.display = 'block';
-  document.getElementById('ex-list-step').style.display = 'block';
-  buildExerciseList();
+  // Date auto-set to today, session shown immediately
 }
 
 var SESSION_EXERCISES = {
@@ -1089,8 +1077,8 @@ var SESSION_EXERCISES = {
   ],
   'Lower 2 (Posterior)': [
     {name:'RDL', sets:3, target:'8 reps', ico:'&#129461;'},
+    {name:'Deadlifts', sets:3, target:'5-8 reps', ico:'&#129461;'},
     {name:'Leg Curls', sets:3, target:'8-12 reps', ico:'&#129461;'},
-    {name:'Laying Leg Curls', sets:2, target:'8 reps', ico:'&#129461;'},
     {name:'Calves', sets:2, target:'12-15 reps', ico:'&#129461;'},
     {name:'Cable Crunches', sets:3, target:'12-15 reps', ico:'&#128170;'},
     {name:'Decline Crunches', sets:3, target:'15 reps', ico:'&#128170;'}
