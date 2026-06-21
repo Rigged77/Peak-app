@@ -320,6 +320,28 @@ textarea{resize:none;height:80px;font-size:14px;line-height:1.5}
 /* Chart period btns */
 .cperiod{padding:6px 11px;border-radius:8px;border:none;background:transparent;color:var(--ink3);font-family:'DM Mono',monospace;font-size:11px;font-weight:600;cursor:pointer;transition:all .15s}
 .cperiod.on{background:var(--bg);color:var(--ink);box-shadow:0 2px 6px rgba(0,0,0,.3)}
+
+/* Exercise accordion */
+.ex-acc-item{background:var(--card);border:1px solid var(--line);border-radius:16px;margin-bottom:10px;overflow:hidden;transition:all .2s}
+.ex-acc-hd{padding:14px 16px;display:flex;align-items:center;justify-content:space-between;cursor:pointer}
+.ex-acc-hd-l{display:flex;align-items:center;gap:12px}
+.ex-acc-ico{width:36px;height:36px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0}
+.ex-acc-name{font-weight:700;font-size:14px}
+.ex-acc-sub{font-family:'DM Mono',monospace;font-size:10px;color:var(--ink3);margin-top:2px}
+.ex-acc-right{display:flex;align-items:center;gap:8px}
+.ex-acc-status{font-family:'DM Mono',monospace;font-size:10px;padding:4px 10px;border-radius:7px;font-weight:600}
+.ex-acc-status.done{background:rgba(0,214,143,.12);color:var(--green);border:1px solid rgba(0,214,143,.2)}
+.ex-acc-status.pending{background:rgba(255,51,82,.08);color:var(--red);border:1px solid rgba(255,51,82,.15)}
+.ex-acc-chevron{font-size:12px;color:var(--ink3);transition:transform .2s}
+.ex-acc-chevron.open{transform:rotate(180deg)}
+.ex-acc-body{display:none;padding:0 16px 14px}
+.ex-acc-body.open{display:block}
+.ex-acc-divider{height:1px;background:var(--line);margin-bottom:13px}
+.ex-save-btn{width:100%;padding:12px;border-radius:11px;border:none;background:linear-gradient(135deg,var(--teal),#00b588);color:#0a0a0f;font-family:'Inter',sans-serif;font-size:14px;font-weight:700;cursor:pointer;transition:all .15s;margin-top:4px}
+.ex-save-btn:active{transform:scale(.97)}
+.ex-saved-row{display:flex;align-items:center;justify-content:space-between;padding:8px 10px;background:rgba(0,214,143,.06);border:1px solid rgba(0,214,143,.15);border-radius:9px;margin-top:6px}
+.ex-saved-txt{font-family:'DM Mono',monospace;font-size:11px;color:var(--green)}
+.ex-edit-btn{font-family:'DM Mono',monospace;font-size:10px;color:var(--ink3);background:none;border:none;cursor:pointer;text-decoration:underline;padding:2px 4px}
 </style>
 </head>
 <body>
@@ -483,60 +505,52 @@ textarea{resize:none;height:80px;font-size:14px;line-height:1.5}
   <!-- LOG PANEL -->
   <div id="panel-log">
     <div class="pad">
-      <!-- Session type grid -->
-      <div class="ctitle" style="margin:0 0 10px">Session Type</div>
-      <div class="session-type-grid">
-        <div class="sess-type-card on" data-v="Upper 1 (Push)" onclick="selSessType(this)">
-          <div class="stc-ico">&#128170;</div><div class="stc-name">Upper 1<br>Push</div>
-        </div>
-        <div class="sess-type-card" data-v="Lower 1 (Quads)" onclick="selSessType(this)">
-          <div class="stc-ico">&#129461;</div><div class="stc-name">Lower 1<br>Quads</div>
-        </div>
-        <div class="sess-type-card" data-v="Upper 2 (Pull)" onclick="selSessType(this)">
-          <div class="stc-ico">&#128170;</div><div class="stc-name">Upper 2<br>Pull</div>
-        </div>
-        <div class="sess-type-card" data-v="Lower 2 (Posterior)" onclick="selSessType(this)">
-          <div class="stc-ico">&#129461;</div><div class="stc-name">Lower 2<br>Posterior</div>
-        </div>
-      </div>
 
+      <!-- Step 1: Date -->
       <div class="ig">
         <span class="lbl">Date</span>
-        <input type="date" id="l-date">
+        <input type="date" id="l-date" onchange="onDateSelected()">
       </div>
-      <div class="r2">
-        <div><span class="lbl">Duration min</span><input type="number" id="l-dur" placeholder="65"></div>
-        <div><span class="lbl">Intensity 1-10</span><input type="number" id="l-int" placeholder="8" min="1" max="10"></div>
-      </div>
-      <div class="ig"><span class="lbl">Notes</span><textarea id="l-notes" placeholder="How did it feel?"></textarea></div>
-    </div>
 
-    <!-- Exercises -->
-    <div class="pad">
-      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px">
-        <div class="ctitle" style="margin:0">Exercises</div>
-        <div style="display:flex;gap:8px;align-items:center">
-          <select id="s-ex" style="width:180px;font-size:13px;padding:8px 32px 8px 12px">
-            <optgroup label="UPPER 1 - PUSH">
-              <option>Incline Barbell Press</option><option>Cable Push Machine</option><option>Machine OHP</option><option>Lateral Raises</option><option>Cable Preacher Curls</option><option>Hammer Curls</option><option>Chest Supported Row</option><option>Tricep Pushdowns</option>
-            </optgroup>
-            <optgroup label="LOWER 1 - QUADS">
-              <option>Hack Squat</option><option>Leg Extensions</option><option>Barbell Sissy Squats</option><option>Tibialis Raises</option><option>Cable Crunches</option><option>Decline Crunches</option>
-            </optgroup>
-            <optgroup label="UPPER 2 - PULL">
-              <option>Chest Supported Row</option><option>FW Lat Pulldown</option><option>Shrugs</option><option>Rear Delts</option><option>Incline Barbell Press</option><option>Lateral Raises</option><option>Overhead Triceps</option>
-            </optgroup>
-            <optgroup label="LOWER 2 - POSTERIOR">
-              <option>RDL</option><option>Leg Curls</option><option>Laying Leg Curls</option><option>Calves</option><option>Cable Crunches</option><option>Decline Crunches</option>
-            </optgroup>
-          </select>
-          <button class="btn btn-fire btn-sm" onclick="addEx()">Add</button>
+      <!-- Step 2: Session type — shown after date selected -->
+      <div id="sess-type-step" style="display:none">
+        <div class="ctitle" style="margin:0 0 10px">Select Session</div>
+        <div class="session-type-grid">
+          <div class="sess-type-card on" data-v="Upper 1 (Push)" onclick="selSessType(this)">
+            <div class="stc-ico">&#128170;</div><div class="stc-name">Upper 1<br>Push</div>
+          </div>
+          <div class="sess-type-card" data-v="Lower 1 (Quads)" onclick="selSessType(this)">
+            <div class="stc-ico">&#129461;</div><div class="stc-name">Lower 1<br>Quads</div>
+          </div>
+          <div class="sess-type-card" data-v="Upper 2 (Pull)" onclick="selSessType(this)">
+            <div class="stc-ico">&#128170;</div><div class="stc-name">Upper 2<br>Pull</div>
+          </div>
+          <div class="sess-type-card" data-v="Lower 2 (Posterior)" onclick="selSessType(this)">
+            <div class="stc-ico">&#129461;</div><div class="stc-name">Lower 2<br>Posterior</div>
+          </div>
         </div>
       </div>
-      <div id="ex-blocks"></div>
-      <button class="btn btn-teal" id="save-all-btn" style="display:none;margin-bottom:10px" onclick="saveAll()">Save Session + All Sets</button>
-      <button class="btn btn-ghost" onclick="saveSessionOnly()" style="margin-bottom:4px">Save Session Only</button>
-      <div class="sp"></div>
+
+      <!-- Step 3: Session details — shown after session type selected -->
+      <div id="sess-detail-step" style="display:none">
+        <div class="r2">
+          <div><span class="lbl">Duration min</span><input type="number" id="l-dur" placeholder="65"></div>
+          <div><span class="lbl">Intensity 1-10</span><input type="number" id="l-int" placeholder="8" min="1" max="10"></div>
+        </div>
+        <div class="ig"><span class="lbl">Notes</span><textarea id="l-notes" placeholder="How did it feel?"></textarea></div>
+        <button class="btn btn-ghost" style="margin-bottom:14px" onclick="saveSessionOnly()">Save Session Info</button>
+        <div id="sess-saved-badge" style="display:none;background:rgba(0,214,143,.08);border:1px solid rgba(0,214,143,.2);border-radius:10px;padding:10px 14px;margin-bottom:14px;font-family:'DM Mono',monospace;font-size:12px;color:var(--green);text-align:center">Session info saved</div>
+      </div>
+    </div>
+
+    <!-- Step 4: Exercise list — shown after session type selected -->
+    <div id="ex-list-step" style="display:none">
+      <div style="padding:0 14px;margin-bottom:8px">
+        <div class="ctitle" style="margin:0">Exercises</div>
+        <div style="font-family:'DM Mono',monospace;font-size:11px;color:var(--ink3);margin-top:3px">Tap an exercise to log sets — save each one individually</div>
+      </div>
+      <div id="ex-accordion" style="padding:0 14px"></div>
+      <div class="pad"><div class="sp"></div></div>
     </div>
   </div>
 
@@ -1024,6 +1038,209 @@ function chipVal(gid) {
 function selSessType(el) {
   document.querySelectorAll('.sess-type-card').forEach(function(c){ c.classList.remove('on'); });
   el.classList.add('on');
+  // Show session detail + exercise list
+  document.getElementById('sess-detail-step').style.display = 'block';
+  document.getElementById('ex-list-step').style.display = 'block';
+  buildExerciseList();
+  updNextSession();
+}
+
+function onDateSelected() {
+  var date = document.getElementById('l-date').value;
+  if (!date) return;
+  document.getElementById('sess-type-step').style.display = 'block';
+  // Pre-select next session
+  var next = getNextSession();
+  document.querySelectorAll('.sess-type-card').forEach(function(c){
+    c.classList.toggle('on', c.dataset.v === next);
+  });
+  document.getElementById('sess-detail-step').style.display = 'block';
+  document.getElementById('ex-list-step').style.display = 'block';
+  buildExerciseList();
+}
+
+var SESSION_EXERCISES = {
+  'Upper 1 (Push)': [
+    {name:'Incline Barbell Press', sets:2, target:'6-10 reps', ico:'&#127959;'},
+    {name:'Cable Push Machine', sets:2, target:'8-10 reps', ico:'&#128170;'},
+    {name:'Machine OHP', sets:2, target:'8-10 reps', ico:'&#128170;'},
+    {name:'Lateral Raises', sets:2, target:'10-12 reps', ico:'&#128170;'},
+    {name:'Cable Preacher Curls', sets:2, target:'8-12 reps', ico:'&#128170;'},
+    {name:'Hammer Curls', sets:2, target:'8-10 reps', ico:'&#128170;'},
+    {name:'Chest Supported Row', sets:2, target:'8-10 reps', ico:'&#128170;'},
+    {name:'Tricep Pushdowns', sets:2, target:'10 reps', ico:'&#128170;'}
+  ],
+  'Lower 1 (Quads)': [
+    {name:'Hack Squat', sets:3, target:'7-9 reps', ico:'&#129461;'},
+    {name:'Leg Extensions', sets:3, target:'10-12 reps', ico:'&#129461;'},
+    {name:'Barbell Sissy Squats', sets:2, target:'8 reps', ico:'&#129461;'},
+    {name:'Tibialis Raises', sets:2, target:'20-25 reps', ico:'&#129461;'},
+    {name:'Cable Crunches', sets:3, target:'12-15 reps', ico:'&#128170;'},
+    {name:'Decline Crunches', sets:3, target:'15 reps', ico:'&#128170;'}
+  ],
+  'Upper 2 (Pull)': [
+    {name:'Chest Supported Row', sets:3, target:'8-12 reps', ico:'&#128170;'},
+    {name:'FW Lat Pulldown', sets:3, target:'8-12 reps', ico:'&#128170;'},
+    {name:'Shrugs', sets:2, target:'10-15 reps', ico:'&#128170;'},
+    {name:'Rear Delts', sets:2, target:'10-12 reps', ico:'&#128170;'},
+    {name:'Incline Barbell Press', sets:2, target:'8-10 reps', ico:'&#127959;'},
+    {name:'Lateral Raises', sets:2, target:'10-12 reps', ico:'&#128170;'},
+    {name:'Overhead Triceps', sets:2, target:'10-12 reps', ico:'&#128170;'}
+  ],
+  'Lower 2 (Posterior)': [
+    {name:'RDL', sets:3, target:'8 reps', ico:'&#129461;'},
+    {name:'Leg Curls', sets:3, target:'8-12 reps', ico:'&#129461;'},
+    {name:'Laying Leg Curls', sets:2, target:'8 reps', ico:'&#129461;'},
+    {name:'Calves', sets:2, target:'12-15 reps', ico:'&#129461;'},
+    {name:'Cable Crunches', sets:3, target:'12-15 reps', ico:'&#128170;'},
+    {name:'Decline Crunches', sets:3, target:'15 reps', ico:'&#128170;'}
+  ]
+};
+
+var savedExercises = {};
+
+function buildExerciseList() {
+  var type = getSessType();
+  var exercises = SESSION_EXERCISES[type] || [];
+  savedExercises = {};
+  var container = document.getElementById('ex-accordion');
+  if (!container) return;
+  container.innerHTML = '';
+  exercises.forEach(function(ex, idx) {
+    var id = 'ex-acc-' + idx;
+    var last = getLastSess(ex.name, type);
+    var lastHtml = '';
+    if (last && last.sets.length) {
+      var sh = last.sets.map(function(s,i){ return '<div class="ls-set">S'+(i+1)+': '+s.weight+'kg x '+s.reps+'</div>'; }).join('');
+      lastHtml = '<div class="last-sess" style="margin-bottom:11px"><div class="ls-ttl">Last: '+last.date+'</div><div class="ls-sets">'+sh+'</div></div>';
+    }
+    var setsHtml = '';
+    for (var s = 1; s <= ex.sets; s++) {
+      setsHtml += '<div class="set-row" id="'+id+'-set-'+s+'">'
+        + '<div class="set-n">'+s+'</div>'
+        + '<div class="set-f"><input class="set-i" type="number" placeholder="'+(last&&last.sets[s-1]?last.sets[s-1].weight+'kg':'kg')+'" id="'+id+'-w-'+s+'" step="0.5"><div class="set-lbl">WEIGHT</div></div>'
+        + '<div class="set-f"><input class="set-i" type="number" placeholder="'+(last&&last.sets[s-1]?last.sets[s-1].reps+' reps':'reps')+'" id="'+id+'-r-'+s+'"><div class="set-lbl">REPS</div></div>'
+        + '</div>';
+    }
+    var div = document.createElement('div');
+    div.className = 'ex-acc-item';
+    div.id = id;
+    // Build using DOM to avoid quote nesting issues
+    var hd = document.createElement('div');
+    hd.className = 'ex-acc-hd';
+    hd.onclick = (function(i){ return function(){ toggleExAcc(i); }; })(id);
+
+    var hdL = document.createElement('div'); hdL.className = 'ex-acc-hd-l';
+    var ico = document.createElement('div'); ico.className = 'ex-acc-ico';
+    ico.style.background = 'rgba(255,51,82,.1)'; ico.style.border = '1px solid rgba(255,51,82,.15)';
+    ico.innerHTML = ex.ico;
+    var hdTxt = document.createElement('div');
+    var exNameDiv = document.createElement('div'); exNameDiv.className = 'ex-acc-name'; exNameDiv.textContent = ex.name;
+    var exSubDiv = document.createElement('div'); exSubDiv.className = 'ex-acc-sub'; exSubDiv.textContent = ex.sets + ' sets · ' + ex.target;
+    hdTxt.appendChild(exNameDiv); hdTxt.appendChild(exSubDiv);
+    hdL.appendChild(ico); hdL.appendChild(hdTxt);
+
+    var hdR = document.createElement('div'); hdR.className = 'ex-acc-right';
+    var statusDiv = document.createElement('div'); statusDiv.className = 'ex-acc-status pending'; statusDiv.id = id+'-status'; statusDiv.textContent = 'Pending';
+    var chevDiv = document.createElement('div'); chevDiv.className = 'ex-acc-chevron'; chevDiv.id = id+'-chev'; chevDiv.innerHTML = '&#8964;';
+    hdR.appendChild(statusDiv); hdR.appendChild(chevDiv);
+    hd.appendChild(hdL); hd.appendChild(hdR);
+
+    var body = document.createElement('div'); body.className = 'ex-acc-body'; body.id = id+'-body';
+    var divider = document.createElement('div'); divider.className = 'ex-acc-divider';
+    body.appendChild(divider);
+
+    // Last session HTML
+    if (lastHtml) { var lDiv = document.createElement('div'); lDiv.innerHTML = lastHtml; body.appendChild(lDiv); }
+
+    // Sets HTML
+    var setsDiv = document.createElement('div'); setsDiv.innerHTML = setsHtml; body.appendChild(setsDiv);
+
+    // Save button
+    var saveBtn = document.createElement('button'); saveBtn.className = 'ex-save-btn';
+    saveBtn.textContent = 'Save ' + ex.name;
+    saveBtn.onclick = (function(i, n, s){ return function(){ saveOneExercise(i, n, s); }; })(id, ex.name, ex.sets);
+    body.appendChild(saveBtn);
+
+    // Saved row
+    var savedRow = document.createElement('div'); savedRow.id = id+'-saved'; savedRow.className = 'ex-saved-row'; savedRow.style.display = 'none';
+    var savedTxt = document.createElement('span'); savedTxt.className = 'ex-saved-txt'; savedTxt.id = id+'-saved-txt'; savedTxt.textContent = 'Saved';
+    var editBtn = document.createElement('button'); editBtn.className = 'ex-edit-btn'; editBtn.textContent = 'Edit';
+    editBtn.onclick = (function(i){ return function(){ editExercise(i); }; })(id);
+    savedRow.appendChild(savedTxt); savedRow.appendChild(editBtn);
+    body.appendChild(savedRow);
+
+    div.appendChild(hd); div.appendChild(body);
+    container.appendChild(div);
+    // Auto-open first exercise
+    if (idx === 0) toggleExAcc(id);
+  });
+}
+
+function toggleExAcc(id) {
+  var body = document.getElementById(id+'-body');
+  var chev = document.getElementById(id+'-chev');
+  if (!body) return;
+  var isOpen = body.classList.contains('open');
+  // Close all
+  document.querySelectorAll('.ex-acc-body').forEach(function(b){ b.classList.remove('open'); });
+  document.querySelectorAll('.ex-acc-chevron').forEach(function(c){ c.classList.remove('open'); });
+  if (!isOpen) {
+    body.classList.add('open');
+    if (chev) chev.classList.add('open');
+  }
+}
+
+function saveOneExercise(id, exName, numSets) {
+  var date = document.getElementById('l-date').value;
+  var type = getSessType();
+  if (!date) { toast('Select a date first','err'); return; }
+  var allStr = DB.get('strength') || [];
+  var saved = 0;
+  var entries = [];
+  for (var s = 1; s <= numSets; s++) {
+    var wEl = document.getElementById(id+'-w-'+s);
+    var rEl = document.getElementById(id+'-r-'+s);
+    if (wEl && rEl && wEl.value && rEl.value) {
+      var w = parseFloat(wEl.value);
+      var r = parseInt(rEl.value);
+      var orm = Math.round(w*(1+r/30)*10)/10;
+      var pb = allStr.filter(function(s){ return s.exercise===exName; }).reduce(function(mx,s){ return Math.max(mx,s.weight); },0);
+      var entry = {date:date,exercise:exName,weight:w,reps:r,setNum:s,type:type,oneRM:orm,best:w>=pb,ts:Date.now()};
+      allStr.push(entry);
+      entries.push(entry);
+      saved++;
+    }
+  }
+  if (!saved) { toast('Enter at least one set','err'); return; }
+  DB.set('strength', allStr);
+  apiPost('logStrength', {date:date, sets:entries});
+  savedExercises[exName] = entries;
+  // Update UI
+  var statusEl = document.getElementById(id+'-status');
+  if (statusEl) { statusEl.textContent = 'Done'; statusEl.className = 'ex-acc-status done'; }
+  var savedDiv = document.getElementById(id+'-saved');
+  var savedTxt = document.getElementById(id+'-saved-txt');
+  if (savedDiv) savedDiv.style.display = 'flex';
+  var setsSummary = entries.map(function(e,i){ return 'S'+(i+1)+': '+e.weight+'kg x '+e.reps; }).join(' · ');
+  if (savedTxt) savedTxt.textContent = setsSummary;
+  toast(exName + ' saved','ok');
+  // Auto-open next exercise
+  var allItems = document.querySelectorAll('.ex-acc-item');
+  var currentIdx = -1;
+  allItems.forEach(function(item,i){ if(item.id===id) currentIdx=i; });
+  if (currentIdx >= 0 && currentIdx < allItems.length-1) {
+    setTimeout(function(){ toggleExAcc(allItems[currentIdx+1].id); }, 300);
+  }
+  startTimer(60);
+}
+
+function editExercise(id) {
+  var savedDiv = document.getElementById(id+'-saved');
+  if (savedDiv) savedDiv.style.display = 'none';
+  var statusEl = document.getElementById(id+'-status');
+  if (statusEl) { statusEl.textContent = 'Pending'; statusEl.className = 'ex-acc-status pending'; }
+  toggleExAcc(id);
 }
 function getSessType() {
   var s = document.querySelector('.sess-type-card.on');
@@ -1060,15 +1277,14 @@ function refreshDash() {
 // TRAINING — SAVE
 // ============================================================
 function saveAll() {
-  var hasSets = false;
-  exBlocks.forEach(function(b){ if(b.sets.length) hasSets=true; });
   saveSession(false);
-  if (hasSets) saveStrength();
-  else toast('Session saved','ok');
+  toast('Session saved','ok');
 }
 
 function saveSessionOnly() {
   saveSession(true);
+  var badge = document.getElementById('sess-saved-badge');
+  if (badge) badge.style.display = 'block';
 }
 
 function saveSession(showToast) {
@@ -1493,7 +1709,6 @@ function getNextSession() {
 function updNextSession() {
   var next=getNextSession();
   var el=document.getElementById('next-sess'); if(el) el.textContent=next;
-  // Pre-select session type card
   document.querySelectorAll('.sess-type-card').forEach(function(c){
     c.classList.toggle('on', c.dataset.v===next);
   });
