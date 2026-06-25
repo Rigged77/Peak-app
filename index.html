@@ -337,6 +337,8 @@ textarea{resize:none;height:80px;font-size:14px;line-height:1.5}
 .ex-acc-body{display:none;padding:0 16px 14px}
 .ex-acc-body.open{display:block}
 .ex-acc-divider{height:1px;background:var(--line);margin-bottom:13px}
+.acc-add-set-btn{width:100%;margin-bottom:10px;padding:9px;border-radius:9px;text-align:center;font-size:12px;font-weight:700;letter-spacing:1px;font-family:'DM Mono',monospace;background:rgba(167,139,250,.08);border:1px dashed rgba(167,139,250,.25);color:var(--purple);cursor:pointer;transition:background .15s}
+.acc-add-set-btn:active{background:rgba(167,139,250,.16)}
 .ex-save-btn{width:100%;padding:12px;border-radius:11px;border:none;background:linear-gradient(135deg,var(--teal),#00b588);color:#0a0a0f;font-family:'Inter',sans-serif;font-size:14px;font-weight:700;cursor:pointer;transition:all .15s;margin-top:4px}
 .ex-save-btn:active{transform:scale(.97)}
 .ex-saved-row{display:flex;align-items:center;justify-content:space-between;padding:8px 10px;background:rgba(0,214,143,.06);border:1px solid rgba(0,214,143,.15);border-radius:9px;margin-top:6px}
@@ -452,6 +454,36 @@ textarea{resize:none;height:80px;font-size:14px;line-height:1.5}
     </div>
   </div>
 
+  <!-- Steps trend chart -->
+  <div class="card" style="padding:16px">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px">
+      <div class="ctitle" style="margin:0">Steps Trend</div>
+      <div style="display:flex;background:var(--bg3);border-radius:10px;padding:3px;gap:2px">
+        <button class="cperiod on" id="sp-w" onclick="setStepsChartPeriod('w',this)">7D</button>
+        <button class="cperiod" id="sp-m" onclick="setStepsChartPeriod('m',this)">30D</button>
+        <button class="cperiod" id="sp-y" onclick="setStepsChartPeriod('y',this)">1Y</button>
+      </div>
+    </div>
+    <div id="steps-chart-wrap" style="position:relative;height:140px;width:100%">
+      <canvas id="steps-chart" style="position:absolute;inset:0;width:100%;height:100%"></canvas>
+      <div id="steps-chart-empty" style="display:none;position:absolute;inset:0;align-items:center;justify-content:center;font-family:DM Mono,monospace;font-size:12px;color:var(--ink3)">Log steps to see trend</div>
+    </div>
+    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:14px">
+      <div style="text-align:center;background:var(--bg3);border-radius:10px;padding:10px 4px">
+        <div style="font-family:'Bebas Neue',sans-serif;font-size:20px;color:var(--blue)" id="sc-low">-</div>
+        <div style="font-family:'DM Mono',monospace;font-size:9px;color:var(--ink3);margin-top:2px;text-transform:uppercase">Low</div>
+      </div>
+      <div style="text-align:center;background:var(--bg3);border-radius:10px;padding:10px 4px">
+        <div style="font-family:'Bebas Neue',sans-serif;font-size:20px;color:var(--gold)" id="sc-avg">-</div>
+        <div style="font-family:'DM Mono',monospace;font-size:9px;color:var(--ink3);margin-top:2px;text-transform:uppercase">Avg</div>
+      </div>
+      <div style="text-align:center;background:var(--bg3);border-radius:10px;padding:10px 4px">
+        <div style="font-family:'Bebas Neue',sans-serif;font-size:20px;color:var(--blue)" id="sc-best">-</div>
+        <div style="font-family:'DM Mono',monospace;font-size:9px;color:var(--ink3);margin-top:2px;text-transform:uppercase">Best</div>
+      </div>
+    </div>
+  </div>
+
   <!-- Weekly summary -->
   <div class="card">
     <div class="ctitle">This Week</div>
@@ -494,6 +526,12 @@ textarea{resize:none;height:80px;font-size:14px;line-height:1.5}
   <div class="next-band" id="next-band">
     <div><div class="next-lbl">Next Session</div><div class="next-val" id="next-sess">-</div></div>
     <div style="font-size:22px;color:var(--blue);opacity:.4">&#8594;</div>
+  </div>
+
+  <!-- Last workout band -->
+  <div id="last-wkt-band" style="display:none;margin:4px 14px 6px;padding:10px 16px;border-radius:14px;background:rgba(167,139,250,.06);border:1px solid rgba(167,139,250,.15);align-items:center;justify-content:space-between">
+    <div><div style="font-family:'DM Mono',monospace;font-size:10px;color:var(--ink3);letter-spacing:.8px;text-transform:uppercase;margin-bottom:3px">Last Workout</div><div style="font-family:'Bebas Neue',sans-serif;font-size:16px;letter-spacing:2px;color:var(--purple)" id="last-wkt-name">-</div></div>
+    <div style="font-size:20px;color:var(--purple);opacity:.5">&#10003;</div>
   </div>
 
   <!-- Segment control: Log / History -->
@@ -592,7 +630,7 @@ textarea{resize:none;height:80px;font-size:14px;line-height:1.5}
     <div class="meal-hd" onclick="toggleMeal('m1-body')">
       <div class="meal-hd-l">
         <div class="meal-ico" style="background:rgba(255,204,68,.1);border:1px solid rgba(255,204,68,.2)">&#129371;</div>
-        <div><div class="meal-name">Breakfast</div><div class="meal-mac">67g P · 564 kcal</div></div>
+        <div><div class="meal-name">Breakfast</div><div class="meal-mac">58g P · 651 kcal</div></div>
       </div>
       <div class="meal-badge pending" id="m1-badge">Pending</div>
     </div>
@@ -603,7 +641,7 @@ textarea{resize:none;height:80px;font-size:14px;line-height:1.5}
       <div class="meal-line"><span class="meal-line-name">Whole milk 300ml</span><span class="meal-line-macro">9.9g P · 198 kcal</span></div>
       <div class="meal-line"><span class="meal-line-name">Coffee + milk splash</span><span class="meal-line-macro">0.5g P · 12 kcal</span></div>
       <div class="meal-line"><span class="meal-line-name">Butter 5g</span><span class="meal-line-macro">0g P · 37 kcal</span></div>
-      <button class="btn btn-fire" style="margin-top:13px;font-size:14px;padding:13px" onclick="logMeal(1,57,564,14,35)">Log Breakfast</button>
+      <button class="btn btn-fire" style="margin-top:13px;font-size:14px;padding:13px" onclick="logMeal(1,58,651,21,36)">Log Breakfast</button>
     </div>
   </div>
 
@@ -958,6 +996,7 @@ function init() {
   updCalRemaining();
   updNextSession();
   buildExerciseList();
+  updLastWorkout();
   refreshHome();
 }
 
@@ -975,7 +1014,7 @@ function navGo(name, el) {
   if (di) di.classList.add('active');
   if (name==='home') refreshHome();
   if (name==='home') refreshHome();
-  if (name==='train') { refreshDash(); buildExerciseList(); }
+  if (name==='train') { window._userPickedSession = false; refreshDash(); buildExerciseList(); updLastWorkout(); }
   if (name==='steps') renderStepsHist();
   if (name==='weight') renderWeightScreen();
   if (name==='data') renderTables();
@@ -1034,6 +1073,7 @@ function chipVal(gid) {
 // SESSION TYPE
 // ============================================================
 function selSessType(el) {
+  window._userPickedSession = true;
   document.querySelectorAll('.sess-type-card').forEach(function(c){ c.classList.remove('on'); });
   el.classList.add('on');
   // Show session detail + exercise list
@@ -1087,27 +1127,65 @@ var SESSION_EXERCISES = {
 
 var savedExercises = {};
 
+function saveDraftSets() {
+  var type = getSessType();
+  var draftKey = 'draft-' + type;
+  var draft = {};
+  document.querySelectorAll('.ex-acc-item').forEach(function(item) {
+    var exId = item.id;
+    var sets = [];
+    var s = 1;
+    while (true) {
+      var wEl = document.getElementById(exId+'-w-'+s);
+      var rEl = document.getElementById(exId+'-r-'+s);
+      if (!wEl) break;
+      sets.push({w: wEl.value, r: rEl ? rEl.value : ''});
+      s++;
+    }
+    var nameEl = item.querySelector('.ex-acc-name');
+    if (nameEl) draft[nameEl.textContent] = sets;
+  });
+  DB.set(draftKey, {sets: draft, date: todayKey});
+}
+
+function getDraftSets(type) {
+  var d = DB.get('draft-' + type);
+  if (!d || d.date !== todayKey) return {};
+  return d.sets || {};
+}
+
+function clearDraftSets(type) {
+  DB.set('draft-' + type, null);
+}
+
 function buildExerciseList() {
   var type = getSessType();
   var exercises = SESSION_EXERCISES[type] || [];
   savedExercises = {};
+  var draft = getDraftSets(type);
   var container = document.getElementById('ex-accordion');
   if (!container) return;
   container.innerHTML = '';
   exercises.forEach(function(ex, idx) {
     var id = 'ex-acc-' + idx;
     var last = getLastSess(ex.name, type);
+    var exDraft = draft[ex.name] || [];
+    var numSets = Math.max(ex.sets, exDraft.length);
     var lastHtml = '';
     if (last && last.sets.length) {
       var sh = last.sets.map(function(s,i){ return '<div class="ls-set">S'+(i+1)+': '+s.weight+'kg x '+s.reps+'</div>'; }).join('');
       lastHtml = '<div class="last-sess" style="margin-bottom:11px"><div class="ls-ttl">Last: '+last.date+'</div><div class="ls-sets">'+sh+'</div></div>';
     }
     var setsHtml = '';
-    for (var s = 1; s <= ex.sets; s++) {
+    for (var s = 1; s <= numSets; s++) {
+      var draftW = exDraft[s-1] ? exDraft[s-1].w : '';
+      var draftR = exDraft[s-1] ? exDraft[s-1].r : '';
+      var phW = last&&last.sets[s-1]?last.sets[s-1].weight+'kg':'kg';
+      var phR = last&&last.sets[s-1]?last.sets[s-1].reps+' reps':'reps';
       setsHtml += '<div class="set-row" id="'+id+'-set-'+s+'">'
         + '<div class="set-n">'+s+'</div>'
-        + '<div class="set-f"><input class="set-i" type="number" placeholder="'+(last&&last.sets[s-1]?last.sets[s-1].weight+'kg':'kg')+'" id="'+id+'-w-'+s+'" step="0.5"><div class="set-lbl">WEIGHT</div></div>'
-        + '<div class="set-f"><input class="set-i" type="number" placeholder="'+(last&&last.sets[s-1]?last.sets[s-1].reps+' reps':'reps')+'" id="'+id+'-r-'+s+'"><div class="set-lbl">REPS</div></div>'
+        + '<div class="set-f"><input class="set-i" type="number" placeholder="'+phW+'" id="'+id+'-w-'+s+'" step="0.5" value="'+draftW+'" oninput="saveDraftSets()"><div class="set-lbl">WEIGHT</div></div>'
+        + '<div class="set-f"><input class="set-i" type="number" placeholder="'+phR+'" id="'+id+'-r-'+s+'" value="'+draftR+'" oninput="saveDraftSets()"><div class="set-lbl">REPS</div></div>'
         + '</div>';
     }
     var div = document.createElement('div');
@@ -1143,6 +1221,13 @@ function buildExerciseList() {
 
     // Sets HTML
     var setsDiv = document.createElement('div'); setsDiv.innerHTML = setsHtml; body.appendChild(setsDiv);
+
+    // + Set button
+    var addSetBtn = document.createElement('button');
+    addSetBtn.className = 'acc-add-set-btn';
+    addSetBtn.textContent = '+ Add Set';
+    addSetBtn.onclick = (function(i, n){ return function(){ addSetToExercise(i, n); }; })(id, ex.name);
+    body.appendChild(addSetBtn);
 
     // Save button
     var saveBtn = document.createElement('button'); saveBtn.className = 'ex-save-btn';
@@ -1186,6 +1271,11 @@ function saveOneExercise(id, exName, numSets) {
   var allStr = DB.get('strength') || [];
   var saved = 0;
   var entries = [];
+  // Count actual set rows (may have been added via + Set)
+  var actualSets = 1;
+  while (document.getElementById(id+'-w-'+actualSets)) actualSets++;
+  actualSets--;
+  numSets = Math.max(numSets, actualSets);
   for (var s = 1; s <= numSets; s++) {
     var wEl = document.getElementById(id+'-w-'+s);
     var rEl = document.getElementById(id+'-r-'+s);
@@ -1204,6 +1294,7 @@ function saveOneExercise(id, exName, numSets) {
   DB.set('strength', allStr);
   apiPost('logStrength', {date:date, sets:entries});
   savedExercises[exName] = entries;
+  saveDraftSets();
   // Update UI
   var statusEl = document.getElementById(id+'-status');
   if (statusEl) { statusEl.textContent = 'Done'; statusEl.className = 'ex-acc-status done'; }
@@ -1230,9 +1321,54 @@ function editExercise(id) {
   if (statusEl) { statusEl.textContent = 'Pending'; statusEl.className = 'ex-acc-status pending'; }
   toggleExAcc(id);
 }
+
+function addSetToExercise(id, exName) {
+  var type = getSessType();
+  var last = getLastSess(exName, type);
+  // Count existing sets
+  var s = 1;
+  while (document.getElementById(id+'-w-'+s)) s++;
+  var sn = s; // next set number
+  var phW = last&&last.sets[sn-1]?last.sets[sn-1].weight+'kg':'kg';
+  var phR = last&&last.sets[sn-1]?last.sets[sn-1].reps+' reps':'reps';
+  var body = document.getElementById(id+'-body');
+  if (!body) return;
+  // Find the add-set button to insert before it
+  var addBtn = body.querySelector('.acc-add-set-btn');
+  var row = document.createElement('div');
+  row.className = 'set-row';
+  row.id = id+'-set-'+sn;
+  row.innerHTML = '<div class="set-n">'+sn+'</div>'
+    + '<div class="set-f"><input class="set-i" type="number" placeholder="'+phW+'" id="'+id+'-w-'+sn+'" step="0.5" oninput="saveDraftSets()"><div class="set-lbl">WEIGHT</div></div>'
+    + '<div class="set-f"><input class="set-i" type="number" placeholder="'+phR+'" id="'+id+'-r-'+sn+'" oninput="saveDraftSets()"><div class="set-lbl">REPS</div></div>';
+  if (addBtn) {
+    body.insertBefore(row, addBtn);
+  } else {
+    body.appendChild(row);
+  }
+  saveDraftSets();
+}
 function getSessType() {
   var s = document.querySelector('.sess-type-card.on');
   return s ? s.dataset.v : 'Upper 1 (Push)';
+}
+
+function updLastWorkout() {
+  var sessions = DB.get('sessions') || [];
+  var band = document.getElementById('last-wkt-band');
+  var nameEl = document.getElementById('last-wkt-name');
+  if (!band || !nameEl) return;
+  // Find most recent session with a type
+  var last = null;
+  for (var i = sessions.length - 1; i >= 0; i--) {
+    if (sessions[i].type && sessions[i].type !== 'Rest') { last = sessions[i]; break; }
+  }
+  if (last) {
+    nameEl.textContent = last.type;
+    band.style.display = 'flex';
+  } else {
+    band.style.display = 'none';
+  }
 }
 
 // ============================================================
@@ -1437,10 +1573,10 @@ function logMeal(n,p,c,cb,f) {
 }
 
 function logMeal3() {
-  var pr=m3Prot==='lentils'?18:m3Prot==='lamb'?35:46;
-  var cal=(m3Prot==='lentils'?350:m3Prot==='lamb'?580:480)+(m3Base==='rice'?130:140);
+  var pr=m3Prot==='lentils'?18:m3Prot==='lamb'?42:46;
+  var cal=(m3Prot==='lentils'?350:m3Prot==='lamb'?650:480)+(m3Base==='rice'?130:140);
   var cb=m3Base==='rice'?65:42;
-  var fat=m3Prot==='lamb'?22:m3Prot==='lentils'?4:8;
+  var fat=m3Prot==='lamb'?28:m3Prot==='lentils'?4:8;
   document.getElementById('m3-mac').textContent=pr+'g P · '+cal+' kcal';
   mData[3]={protein:pr,calories:cal,carbs:cb,fat:fat};
   saveMeals(); updMealUI(); updNutTot();
@@ -1451,10 +1587,18 @@ function logMeal3() {
 function swapBase(v) {
   m3Base=v;
   ['roti','rice'].forEach(function(b){ document.getElementById('sw-'+b).className='swap-btn'+(v===b?' on':''); });
+  updM3Preview();
 }
 function swapProt(v) {
   m3Prot=v;
   ['chicken','lentils','lamb'].forEach(function(p){ document.getElementById('sw-'+p).className='swap-btn'+(v===p?' on':''); });
+  updM3Preview();
+}
+function updM3Preview() {
+  var pr=m3Prot==='lentils'?18:m3Prot==='lamb'?42:46;
+  var cal=(m3Prot==='lentils'?350:m3Prot==='lamb'?650:480)+(m3Base==='rice'?130:140);
+  var el=document.getElementById('m3-mac');
+  if (el) el.textContent=pr+'g P · '+cal+' kcal';
 }
 
 function updMealUI() {
@@ -1697,9 +1841,12 @@ function getNextSession() {
 function updNextSession() {
   var next=getNextSession();
   var el=document.getElementById('next-sess'); if(el) el.textContent=next;
-  document.querySelectorAll('.sess-type-card').forEach(function(c){
-    c.classList.toggle('on', c.dataset.v===next);
-  });
+  // Only auto-select card if no card is already selected via user interaction
+  if (!window._userPickedSession) {
+    document.querySelectorAll('.sess-type-card').forEach(function(c){
+      c.classList.toggle('on', c.dataset.v===next);
+    });
+  }
 }
 
 function calcStreak() {
@@ -2003,6 +2150,7 @@ function refreshHome() {
 
   // Draw chart
   drawWeightChart(chartPeriod);
+  drawStepsChart(stepsChartPeriod);
 }
 
 function setChartPeriod(period, el) {
@@ -2169,6 +2317,170 @@ function drawWeightChart(period) {
     var d = new Date(filtered[i].date);
     var lbl = d.getDate() + '/' + (d.getMonth()+1);
     ctx.fillText(lbl, px(i), padT + chartH + 16);
+  });
+}
+
+var stepsChartPeriod = 'w';
+
+function setStepsChartPeriod(period, el) {
+  stepsChartPeriod = period;
+  document.querySelectorAll('#sp-w,#sp-m,#sp-y').forEach(function(b){ b.classList.remove('on'); });
+  if (el) el.classList.add('on');
+  drawStepsChart(period);
+}
+
+function drawStepsChart(period) {
+  var canvas = document.getElementById('steps-chart');
+  var emptyEl = document.getElementById('steps-chart-empty');
+  if (!canvas) return;
+
+  var stepsData = (DB.get('steps') || []).slice().sort(function(a,b){ return a.date > b.date ? 1 : -1; });
+  if (!stepsData.length) {
+    canvas.style.display = 'none';
+    if (emptyEl) { emptyEl.style.display = 'flex'; emptyEl.style.position = 'static'; }
+    return;
+  }
+  canvas.style.display = 'block';
+  if (emptyEl) emptyEl.style.display = 'none';
+
+  var now = new Date();
+  var cutoff = new Date(now);
+  if (period === 'w') cutoff.setDate(now.getDate() - 7);
+  else if (period === 'm') cutoff.setDate(now.getDate() - 30);
+  else cutoff.setFullYear(now.getFullYear() - 1);
+
+  var filtered = stepsData.filter(function(s){ return new Date(s.date) >= cutoff; });
+  if (!filtered.length) filtered = stepsData.slice(-3);
+
+  var vals = filtered.map(function(s){ return parseInt(s.steps) || 0; });
+
+  var minV = Math.min.apply(null, vals);
+  var maxV = Math.max.apply(null, vals);
+  var range = maxV - minV || 1000;
+  var padded_min = Math.max(0, minV - range * 0.15);
+  var padded_max = maxV + range * 0.15;
+
+  // Stats
+  var avg = Math.round(vals.reduce(function(t,v){ return t+v; },0)/vals.length);
+  var best = Math.max.apply(null, vals);
+  var lowEl = document.getElementById('sc-low');
+  var avgEl = document.getElementById('sc-avg');
+  var bestEl = document.getElementById('sc-best');
+  function fmtK(v) { return v >= 1000 ? (v/1000).toFixed(1)+'k' : v; }
+  if (lowEl) lowEl.textContent = fmtK(Math.min.apply(null, vals));
+  if (avgEl) avgEl.textContent = fmtK(avg);
+  if (bestEl) bestEl.textContent = fmtK(best);
+
+  var dpr = window.devicePixelRatio || 1;
+  var rect = canvas.getBoundingClientRect();
+  var W = rect.width || canvas.offsetWidth || 300;
+  var H = rect.height || canvas.offsetHeight || 140;
+  canvas.width = W * dpr;
+  canvas.height = H * dpr;
+  var ctx = canvas.getContext('2d');
+  ctx.scale(dpr, dpr);
+
+  var padL = 42, padR = 12, padT = 12, padB = 24;
+  var chartW = W - padL - padR;
+  var chartH = H - padT - padB;
+
+  ctx.clearRect(0, 0, W, H);
+
+  // Grid lines
+  ctx.strokeStyle = 'rgba(255,255,255,0.05)';
+  ctx.lineWidth = 1;
+  for (var gi = 0; gi <= 4; gi++) {
+    var gy = padT + (chartH / 4) * gi;
+    ctx.beginPath(); ctx.moveTo(padL, gy); ctx.lineTo(padL + chartW, gy); ctx.stroke();
+    var glabel = Math.round(padded_max - (padded_max - padded_min) * gi / 4);
+    ctx.fillStyle = 'rgba(255,255,255,0.3)';
+    ctx.font = '9px DM Mono, monospace';
+    ctx.textAlign = 'right';
+    ctx.fillText(fmtK(glabel), padL - 4, gy + 3);
+  }
+
+  if (filtered.length < 2) {
+    var sx = padL + chartW / 2;
+    var sy = padT + chartH / 2;
+    ctx.beginPath();
+    ctx.arc(sx, sy, 5, 0, Math.PI * 2);
+    ctx.fillStyle = '#4d9fff';
+    ctx.fill();
+    return;
+  }
+
+  function px(i) { return padL + (i / (filtered.length - 1)) * chartW; }
+  function py(v) { return padT + chartH - ((v - padded_min) / (padded_max - padded_min)) * chartH; }
+
+  // Gradient fill
+  var grad = ctx.createLinearGradient(0, padT, 0, padT + chartH);
+  grad.addColorStop(0, 'rgba(77,159,255,0.25)');
+  grad.addColorStop(1, 'rgba(77,159,255,0.0)');
+  ctx.beginPath();
+  ctx.moveTo(px(0), py(vals[0]));
+  for (var i = 1; i < filtered.length; i++) {
+    var x0 = px(i-1), y0 = py(vals[i-1]);
+    var x1 = px(i), y1 = py(vals[i]);
+    var cpx = (x0 + x1) / 2;
+    ctx.bezierCurveTo(cpx, y0, cpx, y1, x1, y1);
+  }
+  ctx.lineTo(px(filtered.length-1), padT + chartH);
+  ctx.lineTo(px(0), padT + chartH);
+  ctx.closePath();
+  ctx.fillStyle = grad;
+  ctx.fill();
+
+  // Line
+  ctx.beginPath();
+  ctx.moveTo(px(0), py(vals[0]));
+  for (var i = 1; i < filtered.length; i++) {
+    var x0 = px(i-1), y0 = py(vals[i-1]);
+    var x1 = px(i), y1 = py(vals[i]);
+    var cpx = (x0 + x1) / 2;
+    ctx.bezierCurveTo(cpx, y0, cpx, y1, x1, y1);
+  }
+  ctx.strokeStyle = '#4d9fff';
+  ctx.lineWidth = 2.5;
+  ctx.lineJoin = 'round';
+  ctx.stroke();
+
+  // Goal line (10,000 steps)
+  var goalY = py(10000);
+  if (goalY > padT && goalY < padT + chartH) {
+    ctx.beginPath();
+    ctx.setLineDash([4, 4]);
+    ctx.moveTo(padL, goalY);
+    ctx.lineTo(padL + chartW, goalY);
+    ctx.strokeStyle = 'rgba(255,204,68,0.4)';
+    ctx.lineWidth = 1.5;
+    ctx.stroke();
+    ctx.setLineDash([]);
+    ctx.fillStyle = 'rgba(255,204,68,0.6)';
+    ctx.font = '9px DM Mono, monospace';
+    ctx.textAlign = 'right';
+    ctx.fillText('10k', padL - 4, goalY + 3);
+  }
+
+  // Dots on first and last
+  [[0, vals[0]], [filtered.length-1, vals[filtered.length-1]]].forEach(function(p) {
+    ctx.beginPath();
+    ctx.arc(px(p[0]), py(p[1]), 4, 0, Math.PI * 2);
+    ctx.fillStyle = '#4d9fff';
+    ctx.fill();
+    ctx.strokeStyle = '#0a0a0f';
+    ctx.lineWidth = 1.5;
+    ctx.stroke();
+  });
+
+  // X axis labels
+  ctx.fillStyle = 'rgba(255,255,255,0.3)';
+  ctx.font = '9px DM Mono, monospace';
+  ctx.textAlign = 'center';
+  var labelIndices = [0, Math.floor((filtered.length-1)/2), filtered.length-1];
+  labelIndices.forEach(function(li) {
+    var d = new Date(filtered[li].date);
+    var lbl = d.getDate() + '/' + (d.getMonth()+1);
+    ctx.fillText(lbl, px(li), padT + chartH + 16);
   });
 }
 
