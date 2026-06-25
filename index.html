@@ -674,14 +674,30 @@ textarea{resize:none;height:80px;font-size:14px;line-height:1.5}
     </div>
     <div class="meal-body" id="m3-body">
       <div class="meal-divider"></div>
-      <div class="meal-line"><span class="meal-line-name">Chicken breast boiled 100g + extra 80g</span><span class="meal-line-macro">~46g P</span></div>
-      <div class="meal-line"><span class="meal-line-name">Home curry (oil, veg, spices)</span><span class="meal-line-macro">~200 kcal</span></div>
+      <div class="meal-line"><span class="meal-line-name">Home curry (oil, veg, spices)</span><span class="meal-line-macro">~150 kcal fixed</span></div>
+
       <div style="margin-top:10px;margin-bottom:6px"><div class="ctitle" style="margin-bottom:6px">Base</div>
         <div class="swap-row"><div class="swap-btn on" id="sw-roti" onclick="swapBase('roti')">Roti</div><div class="swap-btn" id="sw-rice" onclick="swapBase('rice')">Rice</div></div>
       </div>
       <div style="margin-bottom:10px"><div class="ctitle" style="margin-bottom:6px">Protein</div>
         <div class="swap-row"><div class="swap-btn on" id="sw-chicken" onclick="swapProt('chicken')">Chicken</div><div class="swap-btn" id="sw-lentils" onclick="swapProt('lentils')">Lentils</div><div class="swap-btn" id="sw-lamb" onclick="swapProt('lamb')">Lamb</div></div>
       </div>
+
+      <!-- Portion slider -->
+      <div style="margin-bottom:14px">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px">
+          <div class="ctitle" style="margin:0" id="m3-portion-lbl">Meat weight</div>
+          <div style="font-family:'Bebas Neue',sans-serif;font-size:18px;color:var(--orange)" id="m3-portion-val">110g</div>
+        </div>
+        <input type="range" id="m3-slider" min="80" max="250" value="110" step="5"
+          style="width:100%;accent-color:var(--orange);height:4px;cursor:pointer"
+          oninput="onM3Slider(this.value)">
+        <div style="display:flex;justify-content:space-between;margin-top:4px">
+          <span style="font-family:'DM Mono',monospace;font-size:9px;color:var(--ink3)" id="m3-slider-min">80g</span>
+          <span style="font-family:'DM Mono',monospace;font-size:9px;color:var(--ink3)" id="m3-slider-max">250g</span>
+        </div>
+      </div>
+
       <button class="btn btn-fire" style="font-size:14px;padding:13px" onclick="logMeal3()">Log Main Meal</button>
     </div>
   </div>
@@ -963,6 +979,7 @@ var exBlocks = [];
 var mData = {1:null,2:null,3:null,4:null,snack:null,custom:[]};
 var m3Base = 'roti';
 var m3Prot = 'chicken';
+var m3PortionG = 110;
 var todayKey = '';
 var timerInt = null;
 var timerSecs = 60;
@@ -1592,14 +1609,40 @@ function swapBase(v) {
 function swapProt(v) {
   m3Prot=v;
   ['chicken','lentils','lamb'].forEach(function(p){ document.getElementById('sw-'+p).className='swap-btn'+(v===p?' on':''); });
+  // Adjust slider range and default per protein
+  var slider = document.getElementById('m3-slider');
+  var lbl = document.getElementById('m3-portion-lbl');
+  var minEl = document.getElementById('m3-slider-min');
+  var maxEl = document.getElementById('m3-slider-max');
+  if (v==='lamb')    { slider.min=80;  slider.max=200; slider.step=5; m3PortionG=110; slider.value=110; if(minEl) minEl.textContent='80g';  if(maxEl) maxEl.textContent='200g'; }
+  if (v==='chicken') { slider.min=80;  slider.max=280; slider.step=5; m3PortionG=180; slider.value=180; if(minEl) minEl.textContent='80g';  if(maxEl) maxEl.textContent='280g'; }
+  if (v==='lentils') { slider.min=100; slider.max=350; slider.step=10; m3PortionG=200; slider.value=200; if(minEl) minEl.textContent='100g'; if(maxEl) maxEl.textContent='350g'; }
+  if (lbl) lbl.textContent = v==='lentils' ? 'Lentils (cooked)' : v==='lamb' ? 'Lamb weight' : 'Chicken weight';
   updM3Preview();
 }
-function updM3Preview() {
-  var pr=m3Prot==='lentils'?18:m3Prot==='lamb'?42:46;
-  var cal=(m3Prot==='lentils'?350:m3Prot==='lamb'?650:480)+(m3Base==='rice'?130:140);
-  var el=document.getElementById('m3-mac');
-  if (el) el.textContent=pr+'g P · '+cal+' kcal';
+
+function onM3Slider(val) {
+  m3PortionG = parseInt(val);
+  var valEl = document.getElementById('m3-portion-val');
+  if (valEl) valEl.textContent = m3PortionG + 'g';
+  updM3Preview();
 }
+
+function updM3Preview() {
+  // Per 100g cooked: chicken=31g P/165kcal/2g fat, lamb=25g P/220kcal/14g fat, lentils=9g P/116kcal/0.4g fat
+  var ratio = m3PortionG / 100;
+  var pr, protCal, fat;
+  if (m3Prot==='lamb')    { pr=Math.round(25*ratio); protCal=Math.round(220*ratio); fat=Math.round(14*ratio); }
+  else if (m3Prot==='lentils') { pr=Math.round(9*ratio);  protCal=Math.round(116*ratio); fat=Math.round(0.4*ratio); }
+  else                    { pr=Math.round(31*ratio); protCal=Math.round(165*ratio); fat=Math.round(2*ratio); }
+  var baseCal = m3Base==='rice' ? 130 : 140;
+  var cal = protCal + baseCal + 150; // +150 curry base
+  var valEl = document.getElementById('m3-portion-val');
+  if (valEl) valEl.textContent = m3PortionG + 'g';
+  var el = document.getElementById('m3-mac');
+  if (el) el.textContent = pr+'g P · '+cal+' kcal';
+}
+
 
 function updMealUI() {
   [1,2,3,4].forEach(function(n){
