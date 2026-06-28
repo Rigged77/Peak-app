@@ -1015,6 +1015,13 @@ function init() {
   buildExerciseList();
   updLastWorkout();
   refreshHome();
+
+  // Flush draft sets immediately when screen locks or app is backgrounded
+  document.addEventListener('visibilitychange', function() {
+    if (document.visibilityState === 'hidden') saveDraftSets();
+  });
+  window.addEventListener('pagehide', function() { saveDraftSets(); });
+  window.addEventListener('blur', function() { saveDraftSets(); });
 }
 
 // ============================================================
@@ -1031,7 +1038,7 @@ function navGo(name, el) {
   if (di) di.classList.add('active');
   if (name==='home') refreshHome();
   if (name==='home') refreshHome();
-  if (name==='train') { window._userPickedSession = false; refreshDash(); buildExerciseList(); updLastWorkout(); }
+  if (name==='train') { window._userPickedSession = false; refreshDash(); updLastWorkout(); if (!window._exListBuilt) { buildExerciseList(); } }
   if (name==='steps') renderStepsHist();
   if (name==='weight') renderWeightScreen();
   if (name==='data') renderTables();
@@ -1091,6 +1098,7 @@ function chipVal(gid) {
 // ============================================================
 function selSessType(el) {
   window._userPickedSession = true;
+  window._exListBuilt = false; // force rebuild for new type
   document.querySelectorAll('.sess-type-card').forEach(function(c){ c.classList.remove('on'); });
   el.classList.add('on');
   // Show session detail + exercise list
@@ -1183,6 +1191,8 @@ function buildExerciseList() {
   var container = document.getElementById('ex-accordion');
   if (!container) return;
   container.innerHTML = '';
+  window._exListBuilt = true;
+  window._exListType = type;
   exercises.forEach(function(ex, idx) {
     var id = 'ex-acc-' + idx;
     var last = getLastSess(ex.name, type);
@@ -1201,8 +1211,8 @@ function buildExerciseList() {
       var phR = last&&last.sets[s-1]?last.sets[s-1].reps+' reps':'reps';
       setsHtml += '<div class="set-row" id="'+id+'-set-'+s+'">'
         + '<div class="set-n">'+s+'</div>'
-        + '<div class="set-f"><input class="set-i" type="number" placeholder="'+phW+'" id="'+id+'-w-'+s+'" step="0.5" value="'+draftW+'" oninput="saveDraftSets()"><div class="set-lbl">WEIGHT</div></div>'
-        + '<div class="set-f"><input class="set-i" type="number" placeholder="'+phR+'" id="'+id+'-r-'+s+'" value="'+draftR+'" oninput="saveDraftSets()"><div class="set-lbl">REPS</div></div>'
+        + '<div class="set-f"><input class="set-i" type="number" placeholder="'+phW+'" id="'+id+'-w-'+s+'" step="0.5" value="'+draftW+'" oninput="saveDraftSets()" onblur="saveDraftSets()"><div class="set-lbl">WEIGHT</div></div>'
+        + '<div class="set-f"><input class="set-i" type="number" placeholder="'+phR+'" id="'+id+'-r-'+s+'" value="'+draftR+'" oninput="saveDraftSets()" onblur="saveDraftSets()"><div class="set-lbl">REPS</div></div>'
         + '</div>';
     }
     var div = document.createElement('div');
@@ -1356,8 +1366,8 @@ function addSetToExercise(id, exName) {
   row.className = 'set-row';
   row.id = id+'-set-'+sn;
   row.innerHTML = '<div class="set-n">'+sn+'</div>'
-    + '<div class="set-f"><input class="set-i" type="number" placeholder="'+phW+'" id="'+id+'-w-'+sn+'" step="0.5" oninput="saveDraftSets()"><div class="set-lbl">WEIGHT</div></div>'
-    + '<div class="set-f"><input class="set-i" type="number" placeholder="'+phR+'" id="'+id+'-r-'+sn+'" oninput="saveDraftSets()"><div class="set-lbl">REPS</div></div>';
+    + '<div class="set-f"><input class="set-i" type="number" placeholder="'+phW+'" id="'+id+'-w-'+sn+'" step="0.5" oninput="saveDraftSets()" onblur="saveDraftSets()"><div class="set-lbl">WEIGHT</div></div>'
+    + '<div class="set-f"><input class="set-i" type="number" placeholder="'+phR+'" id="'+id+'-r-'+sn+'" oninput="saveDraftSets()" onblur="saveDraftSets()"><div class="set-lbl">REPS</div></div>';
   if (addBtn) {
     body.insertBefore(row, addBtn);
   } else {
