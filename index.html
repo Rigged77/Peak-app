@@ -534,6 +534,12 @@ textarea{resize:none;height:80px;font-size:14px;line-height:1.5}
     <div style="font-size:20px;color:var(--purple);opacity:.5">&#10003;</div>
   </div>
 
+  <!-- A/B week indicator -->
+  <div style="margin:4px 14px 6px;padding:10px 16px;border-radius:14px;background:rgba(255,153,51,.06);border:1px solid rgba(255,153,51,.15);display:flex;align-items:center;justify-content:space-between">
+    <div><div style="font-family:'DM Mono',monospace;font-size:10px;color:var(--ink3);letter-spacing:.8px;text-transform:uppercase;margin-bottom:3px">Push/Pull Rotation</div><div style="font-family:'Bebas Neue',sans-serif;font-size:16px;letter-spacing:2px;color:var(--orange)" id="ab-week-name">-</div></div>
+    <div style="font-size:11px;color:var(--ink3);cursor:pointer;font-family:'DM Mono',monospace;text-decoration:underline" onclick="toggleABWeek()">Switch</div>
+  </div>
+
   <!-- Segment control: Log / History -->
   <div class="seg-ctrl">
     <button class="seg-btn on" id="seg-log" onclick="switchSeg('log')">Log Session</button>
@@ -707,18 +713,18 @@ textarea{resize:none;height:80px;font-size:14px;line-height:1.5}
     <div class="meal-hd" onclick="toggleMeal('m4-body')">
       <div class="meal-hd-l">
         <div class="meal-ico" style="background:rgba(167,139,250,.1);border:1px solid rgba(167,139,250,.2)">&#127749;</div>
-        <div><div class="meal-name">Evening</div><div class="meal-mac">18g P · 262 kcal</div></div>
+        <div><div class="meal-name">Evening</div><div class="meal-mac" id="m4-mac">35g P · 300 kcal</div></div>
       </div>
       <div class="meal-badge pending" id="m4-badge">Pending</div>
     </div>
     <div class="meal-body" id="m4-body">
       <div class="meal-divider"></div>
-      <div class="meal-line"><span class="meal-line-name">Low fat Greek yogurt 150g</span><span class="meal-line-macro">15g P · 92 kcal</span></div>
-      <div class="meal-line"><span class="meal-line-name">Apple medium (182g)</span><span class="meal-line-macro">0.4g P · 95 kcal</span></div>
-      <div class="meal-line"><span class="meal-line-name">Kiwi medium (76g)</span><span class="meal-line-macro">0.9g P · 46 kcal</span></div>
-      <div class="meal-line"><span class="meal-line-name">Grapes 60g or half banana</span><span class="meal-line-macro">0.5g P · 29 kcal</span></div>
-      <div class="meal-line"><span class="meal-line-name">Creatine 5g</span><span class="meal-line-macro">0g · 0 kcal</span></div>
-      <button class="btn btn-fire" style="margin-top:13px;font-size:14px;padding:13px" onclick="logMeal(4,17,262,50,2)">Log Evening</button>
+      <div class="meal-line"><span class="meal-line-name">Boiled chicken breast 100g</span><span class="meal-line-macro">31g P · 165 kcal</span></div>
+      <div class="meal-line"><span class="meal-line-name">Lettuce</span><span class="meal-line-macro">~0g P · 5 kcal</span></div>
+      <div style="margin-top:10px;margin-bottom:10px"><div class="ctitle" style="margin-bottom:6px">Base</div>
+        <div class="swap-row"><div class="swap-btn on" id="sw-m4-rice" onclick="swapM4Base('rice')">White Rice 100g</div><div class="swap-btn" id="sw-m4-wrap" onclick="swapM4Base('wrap')">Protein Wrap</div></div>
+      </div>
+      <button class="btn btn-fire" style="font-size:14px;padding:13px" onclick="logMeal4()">Log Evening</button>
     </div>
   </div>
 
@@ -1014,6 +1020,7 @@ function init() {
   updNextSession();
   buildExerciseList();
   updLastWorkout();
+  updABWeekBand();
   refreshHome();
 
   // Flush draft sets immediately when screen locks or app is backgrounded
@@ -1038,7 +1045,7 @@ function navGo(name, el) {
   if (di) di.classList.add('active');
   if (name==='home') refreshHome();
   if (name==='home') refreshHome();
-  if (name==='train') { window._userPickedSession = false; refreshDash(); updLastWorkout(); if (!window._exListBuilt) { buildExerciseList(); } }
+  if (name==='train') { window._userPickedSession = false; refreshDash(); updLastWorkout(); updABWeekBand(); if (!window._exListBuilt) { buildExerciseList(); } }
   if (name==='steps') renderStepsHist();
   if (name==='weight') renderWeightScreen();
   if (name==='data') renderTables();
@@ -1113,42 +1120,83 @@ function onDateSelected() {
 }
 
 var SESSION_EXERCISES = {
-  'Upper 1 (Push)': [
-    {name:'Incline Barbell Press', sets:2, target:'6-10 reps', ico:'&#127959;'},
-    {name:'Cable Push Machine', sets:2, target:'8-10 reps', ico:'&#128170;'},
-    {name:'Machine OHP', sets:2, target:'8-10 reps', ico:'&#128170;'},
-    {name:'Lateral Raises', sets:2, target:'10-12 reps', ico:'&#128170;'},
-    {name:'Cable Preacher Curls', sets:2, target:'8-12 reps', ico:'&#128170;'},
-    {name:'Hammer Curls', sets:2, target:'8-10 reps', ico:'&#128170;'},
-    {name:'Chest Supported Row', sets:2, target:'8-10 reps', ico:'&#128170;'},
-    {name:'Tricep Pushdowns', sets:2, target:'10 reps', ico:'&#128170;'}
-  ],
+  'Upper 1 (Push)': {
+    A: [ // Free weight week
+      {name:'Incline Barbell Press', sets:2, target:'6-10 reps', ico:'&#127959;'},
+      {name:'Flat/Incline Dumbbell Press', sets:2, target:'8-10 reps', ico:'&#127959;'},
+      {name:'Overhead Barbell Press', sets:2, target:'6-10 reps', ico:'&#127959;'},
+      {name:'Dumbbell Lateral Raises', sets:2, target:'10-12 reps', ico:'&#128170;'},
+      {name:'EZ Bar Preacher Curls', sets:2, target:'8-12 reps', ico:'&#128170;'},
+      {name:'Dumbbell Hammer Curls', sets:2, target:'8-10 reps', ico:'&#128170;'},
+      {name:'Barbell/DB Row', sets:2, target:'8-10 reps', ico:'&#128170;'},
+      {name:'Skull Crushers', sets:2, target:'10 reps', ico:'&#128170;'}
+    ],
+    B: [ // Machine week
+      {name:'Incline Barbell Press', sets:2, target:'6-10 reps', ico:'&#127959;'},
+      {name:'Cable Push Machine', sets:2, target:'8-10 reps', ico:'&#128170;'},
+      {name:'Machine OHP', sets:2, target:'8-10 reps', ico:'&#128170;'},
+      {name:'Cable Lateral Raises', sets:2, target:'10-12 reps', ico:'&#128170;'},
+      {name:'Cable Preacher Curls', sets:2, target:'8-12 reps', ico:'&#128170;'},
+      {name:'Machine/Cable Hammer Curls', sets:2, target:'8-10 reps', ico:'&#128170;'},
+      {name:'Chest Supported Row', sets:2, target:'8-10 reps', ico:'&#128170;'},
+      {name:'Tricep Pushdowns', sets:2, target:'10 reps', ico:'&#128170;'}
+    ]
+  },
   'Lower 1 (Quads)': [
+    {name:'Bulgarian Split Squat', sets:3, target:'8-10 reps', ico:'&#129461;'},
     {name:'Hack Squat', sets:3, target:'7-9 reps', ico:'&#129461;'},
     {name:'Leg Extensions', sets:3, target:'10-12 reps', ico:'&#129461;'},
-    {name:'Barbell Sissy Squats', sets:2, target:'8 reps', ico:'&#129461;'},
     {name:'Tibialis Raises', sets:2, target:'20-25 reps', ico:'&#129461;'},
     {name:'Cable Crunches', sets:3, target:'12-15 reps', ico:'&#128170;'},
     {name:'Decline Crunches', sets:3, target:'15 reps', ico:'&#128170;'}
   ],
-  'Upper 2 (Pull)': [
-    {name:'Chest Supported Row', sets:3, target:'8-12 reps', ico:'&#128170;'},
-    {name:'FW Lat Pulldown', sets:3, target:'8-12 reps', ico:'&#128170;'},
-    {name:'Shrugs', sets:2, target:'10-15 reps', ico:'&#128170;'},
-    {name:'Rear Delts', sets:2, target:'10-12 reps', ico:'&#128170;'},
-    {name:'Incline Barbell Press', sets:2, target:'8-10 reps', ico:'&#127959;'},
-    {name:'Lateral Raises', sets:2, target:'10-12 reps', ico:'&#128170;'},
-    {name:'Overhead Triceps', sets:2, target:'10-12 reps', ico:'&#128170;'}
-  ],
+  'Upper 2 (Pull)': {
+    A: [ // Machine week (pairs with Push Free week)
+      {name:'Chest Supported Row', sets:3, target:'8-12 reps', ico:'&#128170;'},
+      {name:'Lat Pulldown', sets:3, target:'8-12 reps', ico:'&#128170;'},
+      {name:'Machine Shrugs', sets:2, target:'10-15 reps', ico:'&#128170;'},
+      {name:'Rear Delt Machine', sets:2, target:'10-12 reps', ico:'&#128170;'},
+      {name:'Incline Barbell Press', sets:2, target:'8-10 reps', ico:'&#127959;'},
+      {name:'Cable Lateral Raises', sets:2, target:'10-12 reps', ico:'&#128170;'},
+      {name:'Cable Overhead Triceps', sets:2, target:'10-12 reps', ico:'&#128170;'}
+    ],
+    B: [ // Free weight week (pairs with Push Machine week)
+      {name:'Barbell/DB Row', sets:3, target:'8-12 reps', ico:'&#128170;'},
+      {name:'Pull-ups / Weighted Pulldown', sets:3, target:'6-10 reps', ico:'&#128170;'},
+      {name:'Barbell Shrugs', sets:2, target:'10-15 reps', ico:'&#128170;'},
+      {name:'DB Rear Delt Flys', sets:2, target:'10-12 reps', ico:'&#128170;'},
+      {name:'Incline Barbell Press', sets:2, target:'8-10 reps', ico:'&#127959;'},
+      {name:'DB Lateral Raises', sets:2, target:'10-12 reps', ico:'&#128170;'},
+      {name:'DB Overhead Triceps Extension', sets:2, target:'10-12 reps', ico:'&#128170;'}
+    ]
+  },
   'Lower 2 (Posterior)': [
-    {name:'RDL', sets:3, target:'8 reps', ico:'&#129461;'},
-    {name:'Deadlifts', sets:3, target:'5-8 reps', ico:'&#129461;'},
-    {name:'Leg Curls', sets:3, target:'8-12 reps', ico:'&#129461;'},
-    {name:'Calves', sets:2, target:'12-15 reps', ico:'&#129461;'},
+    {name:'Barbell RDL', sets:3, target:'8 reps', ico:'&#129461;'},
+    {name:'Hamstring Curl', sets:3, target:'8-12 reps', ico:'&#129461;'},
+    {name:'Hip Thrust', sets:3, target:'8-10 reps', ico:'&#129461;'},
+    {name:'Back Extensions', sets:2, target:'12-15 reps', ico:'&#129461;'},
     {name:'Cable Crunches', sets:3, target:'12-15 reps', ico:'&#128170;'},
     {name:'Decline Crunches', sets:3, target:'15 reps', ico:'&#128170;'}
   ]
 };
+
+// A/B week tracking - toggles automatically based on ISO week number
+function getCurrentABWeek() {
+  var stored = DB.get('abWeekOverride');
+  if (stored) return stored;
+  var now = new Date();
+  var start = new Date(now.getFullYear(), 0, 1);
+  var weekNum = Math.ceil((((now - start) / 86400000) + start.getDay() + 1) / 7);
+  return (weekNum % 2 === 0) ? 'A' : 'B';
+}
+
+function getExercisesForType(type) {
+  var entry = SESSION_EXERCISES[type];
+  if (!entry) return [];
+  if (Array.isArray(entry)) return entry; // Legs - no A/B split
+  var week = getCurrentABWeek();
+  return entry[week] || entry.A;
+}
 
 var savedExercises = {};
 
@@ -1185,7 +1233,7 @@ function clearDraftSets(type) {
 
 function buildExerciseList() {
   var type = getSessType();
-  var exercises = SESSION_EXERCISES[type] || [];
+  var exercises = getExercisesForType(type);
   savedExercises = {};
   var draft = getDraftSets(type);
   var container = document.getElementById('ex-accordion');
@@ -1375,6 +1423,48 @@ function addSetToExercise(id, exName) {
   }
   saveDraftSets();
 }
+function updABWeekBand() {
+  var week = getCurrentABWeek();
+  var el = document.getElementById('ab-week-name');
+  if (!el) return;
+  el.textContent = week === 'A' ? 'Push: Free Wt · Pull: Machine' : 'Push: Machine · Pull: Free Wt';
+}
+
+function toggleABWeek() {
+  var current = getCurrentABWeek();
+  var next = current === 'A' ? 'B' : 'A';
+  DB.set('abWeekOverride', next);
+  updABWeekBand();
+  window._exListBuilt = false;
+  buildExerciseList();
+  toast('Switched to Week '+next, 'ok');
+}
+
+var m4Base = 'rice';
+
+function swapM4Base(v) {
+  m4Base = v;
+  document.getElementById('sw-m4-rice').className = 'swap-btn'+(v==='rice'?' on':'');
+  document.getElementById('sw-m4-wrap').className = 'swap-btn'+(v==='wrap'?' on':'');
+  updM4Preview();
+}
+
+function updM4Preview() {
+  var pr, cal;
+  if (m4Base === 'wrap') { pr = 41; cal = 349; }
+  else { pr = 35; cal = 300; }
+  var el = document.getElementById('m4-mac');
+  if (el) el.textContent = pr+'g P · '+cal+' kcal';
+}
+
+function logMeal4() {
+  var carbs, fat, pr, cal;
+  if (m4Base === 'wrap') { pr=41; cal=349; carbs=32; fat=2.3; }
+  else { pr=35; cal=300; carbs=28; fat=0.3; }
+  document.getElementById('m4-mac').textContent = pr+'g P · '+cal+' kcal';
+  logMeal(4, pr, cal, carbs, fat);
+}
+
 function getSessType() {
   var s = document.querySelector('.sess-type-card.on');
   return s ? s.dataset.v : 'Upper 1 (Push)';
