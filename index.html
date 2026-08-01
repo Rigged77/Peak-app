@@ -494,7 +494,7 @@ textarea{resize:none;height:80px;font-size:14px;line-height:1.5}
         <button class="cperiod" id="bp-m" onclick="setBalanceChartPeriod('m',this)">30D</button>
       </div>
     </div>
-    <div style="font-family:'DM Mono',monospace;font-size:10px;color:var(--ink3);margin-bottom:12px">Burn (BMR + active) vs intake, per day</div>
+    <div style="font-family:'DM Mono',monospace;font-size:10px;color:var(--ink3);margin-bottom:12px">Burn (BMR + workout + steps) vs intake, per day</div>
     <div id="balance-chart-wrap" style="position:relative;height:140px;width:100%">
       <canvas id="balance-chart" style="position:absolute;inset:0;width:100%;height:100%"></canvas>
       <div id="balance-chart-empty" style="display:none;position:absolute;inset:0;align-items:center;justify-content:center;font-family:DM Mono,monospace;font-size:12px;color:var(--ink3);text-align:center;padding:0 20px">Set your BMR in Settings, log active calories on Steps, and complete meals daily to see this</div>
@@ -840,7 +840,7 @@ textarea{resize:none;height:80px;font-size:14px;line-height:1.5}
     <div class="ig"><span class="lbl">Date</span><input type="date" id="st-date"></div>
     <div class="r2">
       <div><span class="lbl">Steps Today</span><input type="number" id="st-steps" placeholder="10000" oninput="updStepsBox()"></div>
-      <div><span class="lbl">Active Cals Burned</span><input type="number" id="st-activecal" placeholder="e.g. 450"></div>
+      <div><span class="lbl">Workout Active Cal (not app total)</span><input type="number" id="st-activecal" placeholder="e.g. 369"></div>
     </div>
     <div class="r2">
       <div><span class="lbl">Boxing Rounds</span><input type="number" id="st-box" placeholder="5"></div>
@@ -973,8 +973,10 @@ textarea{resize:none;height:80px;font-size:14px;line-height:1.5}
   <div class="pad">
     <div class="card">
       <div class="ctitle">Metabolism</div>
-      <div style="font-family:'DM Mono',monospace;font-size:10px;color:var(--ink3);margin-bottom:10px">Your resting BMR — used with active calories to calculate total daily burn</div>
-      <div class="ig"><span class="lbl">BMR (kcal/day)</span><input type="number" id="set-bmr" placeholder="e.g. 1800" oninput="saveBMR()"></div>
+      <div style="font-family:'DM Mono',monospace;font-size:10px;color:var(--ink3);margin-bottom:10px">Your resting BMR — used with steps and active calories to calculate total daily burn</div>
+      <div class="ig"><span class="lbl">BMR (kcal/day)</span><input type="number" id="set-bmr" placeholder="e.g. 1910" oninput="saveBMR()"></div>
+      <div class="ig"><span class="lbl">Step calorie rate (kcal per 1,000 steps)</span><input type="number" id="set-stepmult" placeholder="e.g. 50" step="0.1" oninput="saveStepMult()"></div>
+      <div style="font-family:'DM Mono',monospace;font-size:9px;color:var(--ink3);margin-top:6px">Formula: BMR + Workout Active Cal + (Steps × rate ÷ 1000)</div>
     </div>
     <div class="card">
       <div class="ctitle">Google Sheets Sync</div>
@@ -2152,10 +2154,17 @@ function updSettings() {
   var sz=document.getElementById('stor-sz'); if(sz) sz.textContent=(total/1024).toFixed(1)+' KB';
   var bmrEl=document.getElementById('set-bmr');
   if (bmrEl) bmrEl.value = DB.get('bmr') || '';
+  var smEl=document.getElementById('set-stepmult');
+  if (smEl) smEl.value = DB.get('stepMult') !== null && DB.get('stepMult') !== undefined ? DB.get('stepMult') : 50;
 }
 function saveBMR() {
   var v = parseInt(document.getElementById('set-bmr').value) || 0;
   DB.set('bmr', v);
+}
+function saveStepMult() {
+  var v = parseFloat(document.getElementById('set-stepmult').value);
+  if (isNaN(v)) v = 50;
+  DB.set('stepMult', v);
 }
 function clearAll() {
   if (!confirm('Clear all data? Cannot be undone.')) return;
@@ -2650,6 +2659,8 @@ function setBalanceChartPeriod(period, el) {
 function buildBalanceData(period) {
   var bmr = DB.get('bmr') || 0;
   if (!bmr) return [];
+  var stepMult = DB.get('stepMult');
+  if (stepMult === null || stepMult === undefined) stepMult = 50;
 
   var steps = DB.get('steps') || [];
   var nut = DB.get('nutrition') || [];
@@ -2664,16 +2675,19 @@ function buildBalanceData(period) {
   if (period === 'w') cutoff.setDate(now.getDate() - 7);
   else cutoff.setDate(now.getDate() - 30);
 
-  // Only include days where we have BOTH active cal data and intake data
+  // Only include days where we have BOTH step/active data and intake data
   var dates = Object.keys(nutByDate).filter(function(d){
     return new Date(d) >= cutoff && stepsByDate[d] !== undefined;
   }).sort();
 
   return dates.map(function(d) {
-    var activeCal = stepsByDate[d].activeCal || 0;
-    var burn = bmr + activeCal;
+    var s = stepsByDate[d];
+    var workoutActiveCal = s.activeCal || 0;
+    var stepCount = s.steps || 0;
+    var stepCal = (stepCount * stepMult) / 1000;
+    var burn = bmr + workoutActiveCal + stepCal;
     var intake = nutByDate[d].calories || 0;
-    return {date: d, burn: burn, intake: intake, deficit: burn - intake};
+    return {date: d, burn: Math.round(burn), intake: intake, deficit: Math.round(burn) - intake};
   });
 }
 
