@@ -20,6 +20,21 @@
   --safe-t:env(safe-area-inset-top,44px);
   --safe-b:env(safe-area-inset-bottom,34px);
   --nav:calc(62px + var(--safe-b));
+  --chart-grid:rgba(255,255,255,0.05);
+  --chart-text:rgba(255,255,255,0.3);
+  --chart-text2:rgba(255,255,255,0.35);
+  --chart-dot-stroke:#0a0a0f;
+  --nav-bg:rgba(10,10,15,.97);
+}
+[data-theme="light"]{
+  --bg:#f5f5f8;--bg2:#ffffff;--bg3:#eeeef3;--bg4:#e4e4ec;
+  --card:#ffffff;--line:#e2e2ea;--line2:#d0d0dc;
+  --ink:#16161f;--ink2:#5a5a72;--ink3:#8c8ca0;
+  --chart-grid:rgba(0,0,0,0.07);
+  --chart-text:rgba(0,0,0,0.4);
+  --chart-text2:rgba(0,0,0,0.45);
+  --chart-dot-stroke:#ffffff;
+  --nav-bg:rgba(255,255,255,.92);
 }
 html,body{height:100%;background:var(--bg);color:var(--ink);overflow:hidden}
 body{font-family:'Inter',sans-serif;position:fixed;width:100%;height:100%}
@@ -30,7 +45,7 @@ body{font-family:'Inter',sans-serif;position:fixed;width:100%;height:100%}
 /* ── Header ─────────────────────────────────────────────── */
 .hdr{
   padding:calc(var(--safe-t) + 2px) 16px 10px;
-  background:rgba(10,10,15,.97);
+  background:var(--nav-bg);
   border-bottom:1px solid var(--line);
   flex-shrink:0;display:flex;align-items:center;justify-content:space-between;
   position:relative;z-index:50;
@@ -63,7 +78,7 @@ body{font-family:'Inter',sans-serif;position:fixed;width:100%;height:100%}
 .drawer-foot-txt{font-family:'DM Mono',monospace;font-size:10px;color:var(--ink3)}
 
 /* ── Nav ─────────────────────────────────────────────────── */
-.nav{position:fixed;bottom:0;left:0;right:0;height:var(--nav);background:rgba(10,10,15,.97);border-top:1px solid var(--line);display:flex;align-items:flex-start;padding-top:10px;z-index:100;backdrop-filter:blur(24px);-webkit-backdrop-filter:blur(24px)}
+.nav{position:fixed;bottom:0;left:0;right:0;height:var(--nav);background:var(--nav-bg,rgba(10,10,15,.97));border-top:1px solid var(--line);display:flex;align-items:flex-start;padding-top:10px;z-index:100;backdrop-filter:blur(24px);-webkit-backdrop-filter:blur(24px)}
 .ni{flex:1;display:flex;flex-direction:column;align-items:center;gap:4px;cursor:pointer;padding:2px 0;transition:all .15s}
 .ni-ico{font-size:22px;line-height:1}
 .ni-lbl{font-size:9px;color:var(--ink3);font-weight:600;letter-spacing:.5px;text-transform:uppercase;font-family:'DM Mono',monospace}
@@ -81,6 +96,12 @@ body{font-family:'Inter',sans-serif;position:fixed;width:100%;height:100%}
 
 /* ── Cards ───────────────────────────────────────────────── */
 .card{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:16px;margin:0 14px 12px}
+.theme-switch{position:relative;display:inline-block;width:48px;height:28px;flex-shrink:0}
+.theme-switch input{opacity:0;width:0;height:0;position:absolute}
+.theme-switch-track{position:absolute;inset:0;background:var(--bg3);border:1px solid var(--line2);border-radius:14px;transition:background .2s,border-color .2s;cursor:pointer}
+.theme-switch-thumb{position:absolute;top:2px;left:2px;width:22px;height:22px;background:var(--ink2);border-radius:50%;transition:transform .2s,background .2s}
+.theme-switch input:checked + .theme-switch-track{background:rgba(255,204,68,.15);border-color:var(--gold)}
+.theme-switch input:checked + .theme-switch-track .theme-switch-thumb{transform:translateX(20px);background:var(--gold)}
 .ctitle{font-size:11px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--ink3);margin-bottom:12px;font-family:'DM Mono',monospace}
 
 /* ── KPI grid ────────────────────────────────────────────── */
@@ -348,6 +369,15 @@ textarea{resize:none;height:80px;font-size:14px;line-height:1.5}
 </style>
 </head>
 <body>
+<script>
+  // Apply saved theme immediately, before first paint, to avoid a flash of the wrong theme
+  (function(){
+    try {
+      var t = JSON.parse(localStorage.getItem('pk_theme'));
+      if (t === 'light') document.documentElement.setAttribute('data-theme', 'light');
+    } catch(e) {}
+  })();
+</script>
 <div id="app">
 
 <!-- HEADER -->
@@ -1000,6 +1030,16 @@ textarea{resize:none;height:80px;font-size:14px;line-height:1.5}
       <div class="srow"><span class="srow-lbl">Version</span><span class="srow-val">3.0.0</span></div>
       <div class="srow"><span class="srow-lbl">Storage Used</span><span class="srow-val" id="stor-sz">-</span></div>
     </div>
+    <div class="card">
+      <div class="ctitle">Appearance</div>
+      <div style="display:flex;align-items:center;justify-content:space-between">
+        <span style="font-size:14px;color:var(--ink);font-weight:500">Light Mode</span>
+        <label class="theme-switch">
+          <input type="checkbox" id="theme-toggle" onchange="toggleTheme()">
+          <span class="theme-switch-track"><span class="theme-switch-thumb"></span></span>
+        </label>
+      </div>
+    </div>
   </div>
   <div class="sp"></div>
 </div>
@@ -1072,6 +1112,28 @@ var DB = {
   set: function(k,v) { try { localStorage.setItem('pk_'+k, JSON.stringify(v)); } catch(e) { toast('Storage full','err'); } },
   push: function(k,v) { var a=DB.get(k)||[]; a.push(v); DB.set(k,a); }
 };
+
+// ============================================================
+// THEME
+// ============================================================
+function chartColor(varName) {
+  return getComputedStyle(document.documentElement).getPropertyValue('--'+varName).trim();
+}
+function applyTheme(theme) {
+  if (theme === 'light') document.documentElement.setAttribute('data-theme', 'light');
+  else document.documentElement.removeAttribute('data-theme');
+  DB.set('theme', theme);
+}
+function toggleTheme() {
+  var current = DB.get('theme') || 'dark';
+  var next = current === 'light' ? 'dark' : 'light';
+  applyTheme(next);
+  var toggle = document.getElementById('theme-toggle');
+  if (toggle) toggle.checked = next === 'light';
+  // Redraw any visible canvas charts so hardcoded-per-theme colors refresh immediately
+  if (typeof refreshHome === 'function') refreshHome();
+  if (typeof refreshDataGraphs === 'function' && document.getElementById('sc-data') && document.getElementById('sc-data').classList.contains('active')) refreshDataGraphs();
+}
 
 // ============================================================
 // STATE
@@ -2156,6 +2218,8 @@ function updSettings() {
   if (bmrEl) bmrEl.value = DB.get('bmr') || '';
   var smEl=document.getElementById('set-stepmult');
   if (smEl) smEl.value = DB.get('stepMult') !== null && DB.get('stepMult') !== undefined ? DB.get('stepMult') : 50;
+  var themeEl=document.getElementById('theme-toggle');
+  if (themeEl) themeEl.checked = (DB.get('theme') === 'light');
 }
 function saveBMR() {
   var v = parseInt(document.getElementById('set-bmr').value) || 0;
@@ -2377,13 +2441,13 @@ function drawWeightChart(period) {
   ctx.clearRect(0, 0, W, H);
 
   // Grid lines
-  ctx.strokeStyle = 'rgba(255,255,255,0.05)';
+  ctx.strokeStyle = chartColor('chart-grid');
   ctx.lineWidth = 1;
   for (var gi = 0; gi <= 4; gi++) {
     var gy = padT + (chartH / 4) * gi;
     ctx.beginPath(); ctx.moveTo(padL, gy); ctx.lineTo(padL + chartW, gy); ctx.stroke();
     var glabel = (padded_max - (padded_max - padded_min) * gi / 4).toFixed(1);
-    ctx.fillStyle = 'rgba(255,255,255,0.3)';
+    ctx.fillStyle = chartColor('chart-text');
     ctx.font = '9px DM Mono, monospace';
     ctx.textAlign = 'right';
     ctx.fillText(glabel, padL - 4, gy + 3);
@@ -2459,13 +2523,13 @@ function drawWeightChart(period) {
     ctx.arc(px(p[0]), py(p[1]), 4, 0, Math.PI * 2);
     ctx.fillStyle = '#00e5b0';
     ctx.fill();
-    ctx.strokeStyle = '#0a0a0f';
+    ctx.strokeStyle = chartColor('chart-dot-stroke');
     ctx.lineWidth = 1.5;
     ctx.stroke();
   });
 
   // X axis labels (first, middle, last)
-  ctx.fillStyle = 'rgba(255,255,255,0.3)';
+  ctx.fillStyle = chartColor('chart-text');
   ctx.font = '9px DM Mono, monospace';
   ctx.textAlign = 'center';
   var labelIndices = [0, Math.floor((filtered.length-1)/2), filtered.length-1];
@@ -2543,13 +2607,13 @@ function drawStepsChart(period) {
   ctx.clearRect(0, 0, W, H);
 
   // Grid lines
-  ctx.strokeStyle = 'rgba(255,255,255,0.05)';
+  ctx.strokeStyle = chartColor('chart-grid');
   ctx.lineWidth = 1;
   for (var gi = 0; gi <= 4; gi++) {
     var gy = padT + (chartH / 4) * gi;
     ctx.beginPath(); ctx.moveTo(padL, gy); ctx.lineTo(padL + chartW, gy); ctx.stroke();
     var glabel = Math.round(padded_max - (padded_max - padded_min) * gi / 4);
-    ctx.fillStyle = 'rgba(255,255,255,0.3)';
+    ctx.fillStyle = chartColor('chart-text');
     ctx.font = '9px DM Mono, monospace';
     ctx.textAlign = 'right';
     ctx.fillText(fmtK(glabel), padL - 4, gy + 3);
@@ -2623,13 +2687,13 @@ function drawStepsChart(period) {
     ctx.arc(px(p[0]), py(p[1]), 4, 0, Math.PI * 2);
     ctx.fillStyle = '#4d9fff';
     ctx.fill();
-    ctx.strokeStyle = '#0a0a0f';
+    ctx.strokeStyle = chartColor('chart-dot-stroke');
     ctx.lineWidth = 1.5;
     ctx.stroke();
   });
 
   // X axis labels
-  ctx.fillStyle = 'rgba(255,255,255,0.3)';
+  ctx.fillStyle = chartColor('chart-text');
   ctx.font = '9px DM Mono, monospace';
   ctx.textAlign = 'center';
   var labelIndices = [0, Math.floor((filtered.length-1)/2), filtered.length-1];
@@ -2773,13 +2837,13 @@ function drawDualLineChart(canvas, valsA, valsB, dateLabels, colorA, colorB) {
   var range = maxV - minV || 200;
   var padMin = Math.max(0, minV - range*0.15), padMax = maxV + range*0.15;
 
-  ctx.strokeStyle = 'rgba(255,255,255,0.05)';
+  ctx.strokeStyle = chartColor('chart-grid');
   ctx.lineWidth = 1;
   for (var gi = 0; gi <= 4; gi++) {
     var gy = padT + (chartH/4)*gi;
     ctx.beginPath(); ctx.moveTo(padL, gy); ctx.lineTo(padL+chartW, gy); ctx.stroke();
     var glabel = Math.round(padMax - (padMax-padMin)*gi/4);
-    ctx.fillStyle = 'rgba(255,255,255,0.3)';
+    ctx.fillStyle = chartColor('chart-text');
     ctx.font = '9px DM Mono, monospace';
     ctx.textAlign = 'right';
     ctx.fillText(glabel>=1000?(glabel/1000).toFixed(1)+'k':glabel, padL-4, gy+3);
@@ -2808,13 +2872,13 @@ function drawDualLineChart(canvas, valsA, valsB, dateLabels, colorA, colorB) {
     [[0,vals[0]],[vals.length-1,vals[vals.length-1]]].forEach(function(p){
       ctx.beginPath(); ctx.arc(px(p[0]), py(p[1]), 3.5, 0, Math.PI*2);
       ctx.fillStyle = color; ctx.fill();
-      ctx.strokeStyle = '#0a0a0f'; ctx.lineWidth = 1.5; ctx.stroke();
+      ctx.strokeStyle = chartColor('chart-dot-stroke'); ctx.lineWidth = 1.5; ctx.stroke();
     });
   }
   drawLine(valsA, colorA);
   drawLine(valsB, colorB);
 
-  ctx.fillStyle = 'rgba(255,255,255,0.3)';
+  ctx.fillStyle = chartColor('chart-text');
   ctx.font = '9px DM Mono, monospace';
   ctx.textAlign = 'center';
   var labelIdx = [0, Math.floor((n-1)/2), n-1];
@@ -2970,13 +3034,13 @@ function drawBarChart(canvas, vals, dateLabels, color, fmtFn, isRawLabel) {
   var maxV = Math.max.apply(null, vals) || 1;
 
   // grid
-  ctx.strokeStyle = 'rgba(255,255,255,0.05)';
+  ctx.strokeStyle = chartColor('chart-grid');
   ctx.lineWidth = 1;
   for (var gi = 0; gi <= 3; gi++) {
     var gy = padT + (chartH/3)*gi;
     ctx.beginPath(); ctx.moveTo(padL, gy); ctx.lineTo(padL+chartW, gy); ctx.stroke();
     var glabel = Math.round(maxV - (maxV*gi/3));
-    ctx.fillStyle = 'rgba(255,255,255,0.3)';
+    ctx.fillStyle = chartColor('chart-text');
     ctx.font = '9px DM Mono, monospace';
     ctx.textAlign = 'right';
     ctx.fillText(fmtFn(glabel), padL-4, gy+3);
@@ -3007,7 +3071,7 @@ function drawBarChart(canvas, vals, dateLabels, color, fmtFn, isRawLabel) {
 
     // x label — sparse
     if (n <= 10 || i % Math.ceil(n/6) === 0 || i === n-1) {
-      ctx.fillStyle = 'rgba(255,255,255,0.35)';
+      ctx.fillStyle = chartColor('chart-text2');
       ctx.font = '8px DM Mono, monospace';
       ctx.textAlign = 'center';
       var lbl = isRawLabel ? dateLabels[i] : (new Date(dateLabels[i]).getDate()+'/'+(new Date(dateLabels[i]).getMonth()+1));
@@ -3032,13 +3096,13 @@ function drawLineChart(canvas, vals, dateLabels, color, fmtFn) {
   var range = maxV - minV || 1;
   var padMin = Math.max(0, minV - range*0.15), padMax = maxV + range*0.15;
 
-  ctx.strokeStyle = 'rgba(255,255,255,0.05)';
+  ctx.strokeStyle = chartColor('chart-grid');
   ctx.lineWidth = 1;
   for (var gi = 0; gi <= 3; gi++) {
     var gy = padT + (chartH/3)*gi;
     ctx.beginPath(); ctx.moveTo(padL, gy); ctx.lineTo(padL+chartW, gy); ctx.stroke();
     var glabel = Math.round(padMax - (padMax-padMin)*gi/3);
-    ctx.fillStyle = 'rgba(255,255,255,0.3)';
+    ctx.fillStyle = chartColor('chart-text');
     ctx.font = '9px DM Mono, monospace';
     ctx.textAlign = 'right';
     ctx.fillText(fmtFn(glabel), padL-4, gy+3);
@@ -3080,10 +3144,10 @@ function drawLineChart(canvas, vals, dateLabels, color, fmtFn) {
   [[0,vals[0]],[vals.length-1,vals[vals.length-1]]].forEach(function(p){
     ctx.beginPath(); ctx.arc(px(p[0]), py(p[1]), 4, 0, Math.PI*2);
     ctx.fillStyle = color; ctx.fill();
-    ctx.strokeStyle = '#0a0a0f'; ctx.lineWidth = 1.5; ctx.stroke();
+    ctx.strokeStyle = chartColor('chart-dot-stroke'); ctx.lineWidth = 1.5; ctx.stroke();
   });
 
-  ctx.fillStyle = 'rgba(255,255,255,0.3)';
+  ctx.fillStyle = chartColor('chart-text');
   ctx.font = '9px DM Mono, monospace';
   ctx.textAlign = 'center';
   var labelIdx = [0, Math.floor((vals.length-1)/2), vals.length-1];
