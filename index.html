@@ -1426,8 +1426,12 @@ function buildExerciseList() {
 
 function toggleExAcc(id) {
   var item = document.getElementById(id);
-  if (!item) return;
-  item.classList.toggle('open');
+  var body = document.getElementById(id+'-body');
+  if (!item || !body) return;
+  var isOpen = body.classList.toggle('open');
+  item.classList.toggle('open', isOpen);
+  var chev = item.querySelector('.ex-acc-chev');
+  if (chev) chev.style.transform = isOpen ? 'rotate(180deg)' : 'rotate(0deg)';
 }
 
 function addSetToExercise(id, exName) {
