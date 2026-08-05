@@ -1828,7 +1828,10 @@ function updNutTot() {
   document.getElementById('nt-carb').textContent=tcarb+'g';
   document.getElementById('nt-fat').textContent=tfat+'g';
   updCalRemaining(tc,tp);
-  if (mData[1]&&mData[2]&&mData[3]&&mData[4]) {
+  // Save as soon as anything is logged that day — intake is tracked as-logged,
+  // not gated on completing all 4 meals. Partial days still count.
+  var hasAnyMeal = mData[1]||mData[2]||mData[3]||mData[4]||mData.snack||(mData.custom&&mData.custom.length);
+  if (hasAnyMeal) {
     var water=parseFloat(document.getElementById('n-water').value)||0;
     var date=document.getElementById('n-date').value;
     var nut=DB.get('nutrition')||[];
@@ -2726,7 +2729,7 @@ function setBalanceChartPeriod(period, el) {
 
 function buildBalanceData(period) {
   var bmr = DB.get('bmr') || 0;
-  if (!bmr) return [];
+  if (!bmr) return {days:[], reason:'no-bmr'};
   var stepMult = DB.get('stepMult');
   if (stepMult === null || stepMult === undefined) stepMult = 50;
 
@@ -2742,21 +2745,31 @@ function buildBalanceData(period) {
   var cutoff = new Date(now);
   if (period === 'w') cutoff.setDate(now.getDate() - 7);
   else cutoff.setDate(now.getDate() - 30);
+  cutoff.setHours(0,0,0,0);
 
-  // Only include days where we have BOTH step/active data and intake data
+  // A day counts if it has intake logged (as-is, whatever calories were logged that day).
+  // Burn is calculated from steps+BMR when a steps entry exists for that date;
+  // if no steps entry exists that day, burn falls back to BMR alone rather than
+  // dropping the day entirely - partial data is still useful, not a reason to hide the day.
   var dates = Object.keys(nutByDate).filter(function(d){
-    return new Date(d) >= cutoff && stepsByDate[d] !== undefined;
+    return new Date(d) >= cutoff;
   }).sort();
 
-  return dates.map(function(d) {
+  var days = dates.map(function(d) {
     var s = stepsByDate[d];
-    var workoutActiveCal = s.activeCal || 0;
-    var stepCount = s.steps || 0;
+    var workoutActiveCal = s ? (s.activeCal || 0) : 0;
+    var stepCount = s ? (s.steps || 0) : 0;
     var stepCal = (stepCount * stepMult) / 1000;
     var burn = bmr + workoutActiveCal + stepCal;
     var intake = nutByDate[d].calories || 0;
-    return {date: d, burn: Math.round(burn), intake: intake, deficit: Math.round(burn) - intake};
+    return {date: d, burn: Math.round(burn), intake: intake, deficit: Math.round(burn) - intake, hasSteps: !!s};
   });
+
+  if (!days.length) {
+    var reason = dates.length === 0 && Object.keys(nutByDate).length === 0 ? 'no-nutrition' : 'no-days-in-range';
+    return {days:[], reason:reason};
+  }
+  return {days:days, reason:null};
 }
 
 function drawBalanceChart(period) {
@@ -2766,11 +2779,21 @@ function drawBalanceChart(period) {
   if (!canvas) return;
 
   var bmr = DB.get('bmr') || 0;
-  var data = buildBalanceData(period);
+  var result = buildBalanceData(period);
+  var data = result.days;
 
   if (!bmr || !data.length) {
     canvas.style.display = 'none';
-    if (emptyEl) emptyEl.style.display = 'flex';
+    if (emptyEl) {
+      emptyEl.style.display = 'flex';
+      if (!bmr) {
+        emptyEl.textContent = 'Set your BMR in Settings to see this';
+      } else if (result.reason === 'no-nutrition') {
+        emptyEl.textContent = 'No nutrition logged yet — log your intake on the Food tab to see this';
+      } else {
+        emptyEl.textContent = 'No nutrition logged in this date range yet';
+      }
+    }
     document.getElementById('bc-avgburn').textContent = '-';
     document.getElementById('bc-avgdeficit').textContent = '-';
     document.getElementById('bc-projwk').textContent = '-';
@@ -3174,4 +3197,3 @@ init();
 </script>
 </body>
 </html>
-
