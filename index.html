@@ -1858,7 +1858,10 @@ function updCalRemaining(tc,tp) {
   if (elr) elr.innerHTML=tc+' of '+target+' logged<br>'+tp+'g protein';
 }
 
-function saveMeals() { DB.set('meals-'+todayKey,mData); }
+function saveMeals() {
+  var date = (document.getElementById('n-date') && document.getElementById('n-date').value) || todayKey;
+  DB.set('meals-'+date, mData);
+}
 
 function resetMeals() {
   mData={1:null,2:null,3:null,4:null,snack:null,custom:[]};
