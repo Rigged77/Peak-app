@@ -407,6 +407,7 @@ textarea{resize:none;height:80px;font-size:14px;line-height:1.5}
     <div class="drawer-item" id="di-weight" onclick="drawerGo('weight',this)"><span class="d-ico">&#9878;</span> Weight</div>
     <div class="drawer-section">More</div>
     <div class="drawer-item" id="di-data" onclick="drawerGo('data',this)"><span class="d-ico">&#128202;</span> Data &amp; Export</div>
+    <div class="drawer-item" id="di-dashboard" onclick="drawerGo('dashboard',this)"><span class="d-ico">&#128200;</span> Dashboard</div>
     <div class="drawer-item" id="di-settings" onclick="drawerGo('settings',this)"><span class="d-ico">&#9881;</span> Settings</div>
   </div>
   <div class="drawer-foot">
@@ -452,107 +453,6 @@ textarea{resize:none;height:80px;font-size:14px;line-height:1.5}
       <div style="font-family:'DM Mono',monospace;font-size:9px;color:var(--ink3);text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px">Steps</div>
       <div style="font-family:'Bebas Neue',sans-serif;font-size:30px;color:var(--blue)" id="h-steps">-</div>
       <div style="font-family:'DM Mono',monospace;font-size:10px;color:var(--ink3);margin-top:2px">today &nbsp;/ 10,000</div>
-    </div>
-  </div>
-
-  <!-- Weight trend chart -->
-  <div class="card" style="padding:16px">
-    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px">
-      <div class="ctitle" style="margin:0">Weight Trend</div>
-      <div style="display:flex;background:var(--bg3);border-radius:10px;padding:3px;gap:2px">
-        <button class="cperiod on" id="cp-w" onclick="setChartPeriod('w',this)">7D</button>
-        <button class="cperiod" id="cp-m" onclick="setChartPeriod('m',this)">30D</button>
-        <button class="cperiod" id="cp-y" onclick="setChartPeriod('y',this)">1Y</button>
-      </div>
-    </div>
-    <div id="chart-wrap" style="position:relative;height:140px;width:100%">
-      <canvas id="wt-chart" style="position:absolute;inset:0;width:100%;height:100%"></canvas>
-      <div id="chart-empty" style="display:none;position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-family:DM Mono,monospace;font-size:12px;color:var(--ink3)">Log weight entries to see trend</div>
-    </div>
-    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:14px">
-      <div style="text-align:center;background:var(--bg3);border-radius:10px;padding:10px 4px">
-        <div style="font-family:'Bebas Neue',sans-serif;font-size:20px;color:var(--teal)" id="c-low">-</div>
-        <div style="font-family:'DM Mono',monospace;font-size:9px;color:var(--ink3);margin-top:2px;text-transform:uppercase">Low</div>
-      </div>
-      <div style="text-align:center;background:var(--bg3);border-radius:10px;padding:10px 4px">
-        <div style="font-family:'Bebas Neue',sans-serif;font-size:20px;color:var(--gold)" id="c-avg">-</div>
-        <div style="font-family:'DM Mono',monospace;font-size:9px;color:var(--ink3);margin-top:2px;text-transform:uppercase">Avg</div>
-      </div>
-      <div style="text-align:center;background:var(--bg3);border-radius:10px;padding:10px 4px">
-        <div style="font-family:'Bebas Neue',sans-serif;font-size:20px" id="c-chg">-</div>
-        <div style="font-family:'DM Mono',monospace;font-size:9px;color:var(--ink3);margin-top:2px;text-transform:uppercase">Trend</div>
-      </div>
-    </div>
-  </div>
-
-  <!-- Steps trend chart -->
-  <div class="card" style="padding:16px">
-    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px">
-      <div class="ctitle" style="margin:0">Steps Trend</div>
-      <div style="display:flex;background:var(--bg3);border-radius:10px;padding:3px;gap:2px">
-        <button class="cperiod on" id="sp-w" onclick="setStepsChartPeriod('w',this)">7D</button>
-        <button class="cperiod" id="sp-m" onclick="setStepsChartPeriod('m',this)">30D</button>
-        <button class="cperiod" id="sp-y" onclick="setStepsChartPeriod('y',this)">1Y</button>
-      </div>
-    </div>
-    <div id="steps-chart-wrap" style="position:relative;height:140px;width:100%">
-      <canvas id="steps-chart" style="position:absolute;inset:0;width:100%;height:100%"></canvas>
-      <div id="steps-chart-empty" style="display:none;position:absolute;inset:0;align-items:center;justify-content:center;font-family:DM Mono,monospace;font-size:12px;color:var(--ink3)">Log steps to see trend</div>
-    </div>
-    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:14px">
-      <div style="text-align:center;background:var(--bg3);border-radius:10px;padding:10px 4px">
-        <div style="font-family:'Bebas Neue',sans-serif;font-size:20px;color:var(--blue)" id="sc-low">-</div>
-        <div style="font-family:'DM Mono',monospace;font-size:9px;color:var(--ink3);margin-top:2px;text-transform:uppercase">Low</div>
-      </div>
-      <div style="text-align:center;background:var(--bg3);border-radius:10px;padding:10px 4px">
-        <div style="font-family:'Bebas Neue',sans-serif;font-size:20px;color:var(--gold)" id="sc-avg">-</div>
-        <div style="font-family:'DM Mono',monospace;font-size:9px;color:var(--ink3);margin-top:2px;text-transform:uppercase">Avg</div>
-      </div>
-      <div style="text-align:center;background:var(--bg3);border-radius:10px;padding:10px 4px">
-        <div style="font-family:'Bebas Neue',sans-serif;font-size:20px;color:var(--blue)" id="sc-best">-</div>
-        <div style="font-family:'DM Mono',monospace;font-size:9px;color:var(--ink3);margin-top:2px;text-transform:uppercase">Best</div>
-      </div>
-    </div>
-  </div>
-
-  <!-- Calorie Balance chart -->
-  <div class="card" style="padding:16px" id="balance-card">
-    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:4px">
-      <div class="ctitle" style="margin:0">Calorie Balance</div>
-      <div style="display:flex;background:var(--bg3);border-radius:10px;padding:3px;gap:2px">
-        <button class="cperiod on" id="bp-w" onclick="setBalanceChartPeriod('w',this)">7D</button>
-        <button class="cperiod" id="bp-m" onclick="setBalanceChartPeriod('m',this)">30D</button>
-      </div>
-    </div>
-    <div style="font-family:'DM Mono',monospace;font-size:10px;color:var(--ink3);margin-bottom:12px">Burn (BMR + workout + steps) vs intake, per day</div>
-    <div id="balance-chart-wrap" style="position:relative;height:140px;width:100%">
-      <canvas id="balance-chart" style="position:absolute;inset:0;width:100%;height:100%"></canvas>
-      <div id="balance-chart-empty" style="display:none;position:absolute;inset:0;align-items:center;justify-content:center;font-family:DM Mono,monospace;font-size:12px;color:var(--ink3);text-align:center;padding:0 20px">Set your BMR in Settings, log active calories on Steps, and complete meals daily to see this</div>
-    </div>
-    <div style="display:flex;gap:14px;margin-top:10px;justify-content:center">
-      <div style="display:flex;align-items:center;gap:5px"><div style="width:9px;height:9px;border-radius:2px;background:var(--red)"></div><span style="font-family:'DM Mono',monospace;font-size:9px;color:var(--ink3)">BURN</span></div>
-      <div style="display:flex;align-items:center;gap:5px"><div style="width:9px;height:9px;border-radius:2px;background:var(--teal)"></div><span style="font-family:'DM Mono',monospace;font-size:9px;color:var(--ink3)">INTAKE</span></div>
-    </div>
-    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:14px">
-      <div style="text-align:center;background:var(--bg3);border-radius:10px;padding:10px 4px">
-        <div style="font-family:'Bebas Neue',sans-serif;font-size:18px;color:var(--red)" id="bc-avgburn">-</div>
-        <div style="font-family:'DM Mono',monospace;font-size:9px;color:var(--ink3);margin-top:2px;text-transform:uppercase">Avg Burn</div>
-      </div>
-      <div style="text-align:center;background:var(--bg3);border-radius:10px;padding:10px 4px">
-        <div style="font-family:'Bebas Neue',sans-serif;font-size:18px;color:var(--gold)" id="bc-avgdeficit">-</div>
-        <div style="font-family:'DM Mono',monospace;font-size:9px;color:var(--ink3);margin-top:2px;text-transform:uppercase">Avg Deficit</div>
-      </div>
-      <div style="text-align:center;background:var(--bg3);border-radius:10px;padding:10px 4px">
-        <div style="font-family:'Bebas Neue',sans-serif;font-size:18px;color:var(--green)" id="bc-projwk">-</div>
-        <div style="font-family:'DM Mono',monospace;font-size:9px;color:var(--ink3);margin-top:2px;text-transform:uppercase">Proj/Wk</div>
-      </div>
-    </div>
-    <div id="bc-actual-row" style="display:none;margin-top:10px;background:rgba(0,214,143,.06);border:1px solid rgba(0,214,143,.15);border-radius:10px;padding:10px 14px">
-      <div style="display:flex;justify-content:space-between;align-items:center">
-        <div style="font-family:'DM Mono',monospace;font-size:10px;color:var(--ink3);text-transform:uppercase">Actual weight change</div>
-        <div style="font-family:'Bebas Neue',sans-serif;font-size:16px;color:var(--green)" id="bc-actualwk">-</div>
-      </div>
-      <div style="font-family:'DM Mono',monospace;font-size:9px;color:var(--ink3);margin-top:4px" id="bc-verdict">-</div>
     </div>
   </div>
 
@@ -961,8 +861,127 @@ textarea{resize:none;height:80px;font-size:14px;line-height:1.5}
 <div class="screen" id="sc-data">
   <div class="pg-hd"><div class="pg-title">Data &amp; Export</div></div>
 
-  <!-- Session performance overview -->
-  <div class="card" style="padding:16px;margin:0 14px 14px">
+  <div class="pad" style="display:flex;flex-direction:column;gap:9px;margin-bottom:18px">
+    <button class="btn btn-teal" onclick="exportExcel()">Export to Excel (.xls)</button>
+    <button class="btn btn-ghost" style="border-color:var(--blue);color:var(--blue)" onclick="exportCSV()">Export to CSV</button>
+  </div>
+  <div style="margin:0 14px 16px"><div style="font-family:'Bebas Neue',sans-serif;font-size:16px;letter-spacing:2px;color:var(--ink2);margin-bottom:8px">Sessions</div><div style="overflow-x:auto;border-radius:14px;border:1px solid var(--line)"><table class="dtbl"><thead><tr><th>Date</th><th>Type</th><th>Weight</th><th>Duration</th><th>Intensity</th></tr></thead><tbody id="tb1"><tr><td colspan="5" class="empty">No data</td></tr></tbody></table></div></div>
+  <div style="margin:0 14px 16px"><div style="font-family:'Bebas Neue',sans-serif;font-size:16px;letter-spacing:2px;color:var(--ink2);margin-bottom:8px">Strength</div><div style="overflow-x:auto;border-radius:14px;border:1px solid var(--line)"><table class="dtbl"><thead><tr><th>Date</th><th>Exercise</th><th>Weight</th><th>Reps</th><th>1RM</th></tr></thead><tbody id="tb2"><tr><td colspan="5" class="empty">No data</td></tr></tbody></table></div></div>
+  <div style="margin:0 14px 16px"><div style="font-family:'Bebas Neue',sans-serif;font-size:16px;letter-spacing:2px;color:var(--ink2);margin-bottom:8px">Nutrition</div><div style="overflow-x:auto;border-radius:14px;border:1px solid var(--line)"><table class="dtbl"><thead><tr><th>Date</th><th>Calories</th><th>Protein</th><th>Carbs</th><th>Fat</th></tr></thead><tbody id="tb3"><tr><td colspan="5" class="empty">No data</td></tr></tbody></table></div></div>
+  <div style="margin:0 14px 16px"><div style="font-family:'Bebas Neue',sans-serif;font-size:16px;letter-spacing:2px;color:var(--ink2);margin-bottom:8px">Steps</div><div style="overflow-x:auto;border-radius:14px;border:1px solid var(--line)"><table class="dtbl"><thead><tr><th>Date</th><th>Steps</th><th>Active Cal</th><th>Boxing</th><th>Goal</th></tr></thead><tbody id="tb4"><tr><td colspan="5" class="empty">No data</td></tr></tbody></table></div></div>
+  <div class="sp"></div>
+</div>
+
+<!-- ===== DASHBOARD ===== -->
+<div class="screen" id="sc-dashboard">
+  <div class="pg-hd"><div class="pg-title">Dashboard</div></div>
+
+  <!-- Concerns panel -->
+  <div id="concerns-panel" style="margin:0 14px 14px"></div>
+
+  <!-- Weight trend chart -->
+  <div class="card" style="padding:16px">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px">
+      <div class="ctitle" style="margin:0">Weight Trend</div>
+      <div style="display:flex;background:var(--bg3);border-radius:10px;padding:3px;gap:2px">
+        <button class="cperiod on" id="cp-w" onclick="setChartPeriod('w',this)">7D</button>
+        <button class="cperiod" id="cp-m" onclick="setChartPeriod('m',this)">30D</button>
+        <button class="cperiod" id="cp-y" onclick="setChartPeriod('y',this)">1Y</button>
+      </div>
+    </div>
+    <div id="chart-wrap" style="position:relative;height:140px;width:100%">
+      <canvas id="wt-chart" style="position:absolute;inset:0;width:100%;height:100%"></canvas>
+      <div id="chart-empty" style="display:none;position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-family:DM Mono,monospace;font-size:12px;color:var(--ink3)">Log weight entries to see trend</div>
+    </div>
+    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:14px">
+      <div style="text-align:center;background:var(--bg3);border-radius:10px;padding:10px 4px">
+        <div style="font-family:'Bebas Neue',sans-serif;font-size:20px;color:var(--teal)" id="c-low">-</div>
+        <div style="font-family:'DM Mono',monospace;font-size:9px;color:var(--ink3);margin-top:2px;text-transform:uppercase">Low</div>
+      </div>
+      <div style="text-align:center;background:var(--bg3);border-radius:10px;padding:10px 4px">
+        <div style="font-family:'Bebas Neue',sans-serif;font-size:20px;color:var(--gold)" id="c-avg">-</div>
+        <div style="font-family:'DM Mono',monospace;font-size:9px;color:var(--ink3);margin-top:2px;text-transform:uppercase">Avg</div>
+      </div>
+      <div style="text-align:center;background:var(--bg3);border-radius:10px;padding:10px 4px">
+        <div style="font-family:'Bebas Neue',sans-serif;font-size:20px" id="c-chg">-</div>
+        <div style="font-family:'DM Mono',monospace;font-size:9px;color:var(--ink3);margin-top:2px;text-transform:uppercase">Trend</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Steps trend chart -->
+  <div class="card" style="padding:16px">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px">
+      <div class="ctitle" style="margin:0">Steps Trend</div>
+      <div style="display:flex;background:var(--bg3);border-radius:10px;padding:3px;gap:2px">
+        <button class="cperiod on" id="sp-w" onclick="setStepsChartPeriod('w',this)">7D</button>
+        <button class="cperiod" id="sp-m" onclick="setStepsChartPeriod('m',this)">30D</button>
+        <button class="cperiod" id="sp-y" onclick="setStepsChartPeriod('y',this)">1Y</button>
+      </div>
+    </div>
+    <div id="steps-chart-wrap" style="position:relative;height:140px;width:100%">
+      <canvas id="steps-chart" style="position:absolute;inset:0;width:100%;height:100%"></canvas>
+      <div id="steps-chart-empty" style="display:none;position:absolute;inset:0;align-items:center;justify-content:center;font-family:DM Mono,monospace;font-size:12px;color:var(--ink3)">Log steps to see trend</div>
+    </div>
+    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:14px">
+      <div style="text-align:center;background:var(--bg3);border-radius:10px;padding:10px 4px">
+        <div style="font-family:'Bebas Neue',sans-serif;font-size:20px;color:var(--blue)" id="sc-low">-</div>
+        <div style="font-family:'DM Mono',monospace;font-size:9px;color:var(--ink3);margin-top:2px;text-transform:uppercase">Low</div>
+      </div>
+      <div style="text-align:center;background:var(--bg3);border-radius:10px;padding:10px 4px">
+        <div style="font-family:'Bebas Neue',sans-serif;font-size:20px;color:var(--gold)" id="sc-avg">-</div>
+        <div style="font-family:'DM Mono',monospace;font-size:9px;color:var(--ink3);margin-top:2px;text-transform:uppercase">Avg</div>
+      </div>
+      <div style="text-align:center;background:var(--bg3);border-radius:10px;padding:10px 4px">
+        <div style="font-family:'Bebas Neue',sans-serif;font-size:20px;color:var(--blue)" id="sc-best">-</div>
+        <div style="font-family:'DM Mono',monospace;font-size:9px;color:var(--ink3);margin-top:2px;text-transform:uppercase">Best</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Calorie Balance chart -->
+  <div class="card" style="padding:16px" id="balance-card">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:4px">
+      <div class="ctitle" style="margin:0">Calorie Balance</div>
+      <div style="display:flex;background:var(--bg3);border-radius:10px;padding:3px;gap:2px">
+        <button class="cperiod on" id="bp-w" onclick="setBalanceChartPeriod('w',this)">7D</button>
+        <button class="cperiod" id="bp-m" onclick="setBalanceChartPeriod('m',this)">30D</button>
+      </div>
+    </div>
+    <div style="font-family:'DM Mono',monospace;font-size:10px;color:var(--ink3);margin-bottom:12px">Burn (BMR + workout + steps) vs intake, per day</div>
+    <div id="balance-chart-wrap" style="position:relative;height:140px;width:100%">
+      <canvas id="balance-chart" style="position:absolute;inset:0;width:100%;height:100%"></canvas>
+      <div id="balance-chart-empty" style="display:none;position:absolute;inset:0;align-items:center;justify-content:center;font-family:DM Mono,monospace;font-size:12px;color:var(--ink3);text-align:center;padding:0 20px">Set your BMR in Settings, log active calories on Steps, and complete meals daily to see this</div>
+    </div>
+    <div style="display:flex;gap:14px;margin-top:10px;justify-content:center">
+      <div style="display:flex;align-items:center;gap:5px"><div style="width:9px;height:9px;border-radius:2px;background:var(--red)"></div><span style="font-family:'DM Mono',monospace;font-size:9px;color:var(--ink3)">BURN</span></div>
+      <div style="display:flex;align-items:center;gap:5px"><div style="width:9px;height:9px;border-radius:2px;background:var(--teal)"></div><span style="font-family:'DM Mono',monospace;font-size:9px;color:var(--ink3)">INTAKE</span></div>
+    </div>
+    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:14px">
+      <div style="text-align:center;background:var(--bg3);border-radius:10px;padding:10px 4px">
+        <div style="font-family:'Bebas Neue',sans-serif;font-size:18px;color:var(--red)" id="bc-avgburn">-</div>
+        <div style="font-family:'DM Mono',monospace;font-size:9px;color:var(--ink3);margin-top:2px;text-transform:uppercase">Avg Burn</div>
+      </div>
+      <div style="text-align:center;background:var(--bg3);border-radius:10px;padding:10px 4px">
+        <div style="font-family:'Bebas Neue',sans-serif;font-size:18px;color:var(--gold)" id="bc-avgdeficit">-</div>
+        <div style="font-family:'DM Mono',monospace;font-size:9px;color:var(--ink3);margin-top:2px;text-transform:uppercase">Avg Deficit</div>
+      </div>
+      <div style="text-align:center;background:var(--bg3);border-radius:10px;padding:10px 4px">
+        <div style="font-family:'Bebas Neue',sans-serif;font-size:18px;color:var(--green)" id="bc-projwk">-</div>
+        <div style="font-family:'DM Mono',monospace;font-size:9px;color:var(--ink3);margin-top:2px;text-transform:uppercase">Proj/Wk</div>
+      </div>
+    </div>
+    <div id="bc-actual-row" style="display:none;margin-top:10px;background:rgba(0,214,143,.06);border:1px solid rgba(0,214,143,.15);border-radius:10px;padding:10px 14px">
+      <div style="display:flex;justify-content:space-between;align-items:center">
+        <div style="font-family:'DM Mono',monospace;font-size:10px;color:var(--ink3);text-transform:uppercase">Actual weight change</div>
+        <div style="font-family:'Bebas Neue',sans-serif;font-size:16px;color:var(--green)" id="bc-actualwk">-</div>
+      </div>
+      <div style="font-family:'DM Mono',monospace;font-size:9px;color:var(--ink3);margin-top:4px" id="bc-verdict">-</div>
+    </div>
+  </div>
+
+  <!-- Training volume -->
+  <div class="card" style="padding:16px">
     <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:4px">
       <div class="ctitle" style="margin:0">Training Volume</div>
       <div style="display:flex;background:var(--bg3);border-radius:10px;padding:3px;gap:2px">
@@ -978,7 +997,7 @@ textarea{resize:none;height:80px;font-size:14px;line-height:1.5}
   </div>
 
   <!-- Estimated strength progression -->
-  <div class="card" style="padding:16px;margin:0 14px 14px">
+  <div class="card" style="padding:16px">
     <div class="ctitle" style="margin:0 0 4px">Strength Progress</div>
     <div style="font-family:'DM Mono',monospace;font-size:10px;color:var(--ink3);margin-bottom:12px">Estimated 1-rep max over time — pick a lift</div>
     <select id="strength-ex-select" onchange="drawStrengthChart(this.value)" style="width:100%;padding:10px 12px;border-radius:10px;background:var(--bg3);border:1px solid var(--line2);color:var(--ink);font-family:'DM Mono',monospace;font-size:12px;margin-bottom:12px"></select>
@@ -1003,7 +1022,7 @@ textarea{resize:none;height:80px;font-size:14px;line-height:1.5}
   </div>
 
   <!-- Weekly consistency -->
-  <div class="card" style="padding:16px;margin:0 14px 14px">
+  <div class="card" style="padding:16px">
     <div class="ctitle" style="margin:0 0 4px">Weekly Consistency</div>
     <div style="font-family:'DM Mono',monospace;font-size:10px;color:var(--ink3);margin-bottom:12px">Sessions completed per week, last 8 weeks</div>
     <div style="position:relative;height:130px;width:100%">
@@ -1012,14 +1031,6 @@ textarea{resize:none;height:80px;font-size:14px;line-height:1.5}
     </div>
   </div>
 
-  <div class="pad" style="display:flex;flex-direction:column;gap:9px;margin-bottom:18px">
-    <button class="btn btn-teal" onclick="exportExcel()">Export to Excel (.xls)</button>
-    <button class="btn btn-ghost" style="border-color:var(--blue);color:var(--blue)" onclick="exportCSV()">Export to CSV</button>
-  </div>
-  <div style="margin:0 14px 16px"><div style="font-family:'Bebas Neue',sans-serif;font-size:16px;letter-spacing:2px;color:var(--ink2);margin-bottom:8px">Sessions</div><div style="overflow-x:auto;border-radius:14px;border:1px solid var(--line)"><table class="dtbl"><thead><tr><th>Date</th><th>Type</th><th>Weight</th><th>Duration</th><th>Intensity</th></tr></thead><tbody id="tb1"><tr><td colspan="5" class="empty">No data</td></tr></tbody></table></div></div>
-  <div style="margin:0 14px 16px"><div style="font-family:'Bebas Neue',sans-serif;font-size:16px;letter-spacing:2px;color:var(--ink2);margin-bottom:8px">Strength</div><div style="overflow-x:auto;border-radius:14px;border:1px solid var(--line)"><table class="dtbl"><thead><tr><th>Date</th><th>Exercise</th><th>Weight</th><th>Reps</th><th>1RM</th></tr></thead><tbody id="tb2"><tr><td colspan="5" class="empty">No data</td></tr></tbody></table></div></div>
-  <div style="margin:0 14px 16px"><div style="font-family:'Bebas Neue',sans-serif;font-size:16px;letter-spacing:2px;color:var(--ink2);margin-bottom:8px">Nutrition</div><div style="overflow-x:auto;border-radius:14px;border:1px solid var(--line)"><table class="dtbl"><thead><tr><th>Date</th><th>Calories</th><th>Protein</th><th>Carbs</th><th>Fat</th></tr></thead><tbody id="tb3"><tr><td colspan="5" class="empty">No data</td></tr></tbody></table></div></div>
-  <div style="margin:0 14px 16px"><div style="font-family:'Bebas Neue',sans-serif;font-size:16px;letter-spacing:2px;color:var(--ink2);margin-bottom:8px">Steps</div><div style="overflow-x:auto;border-radius:14px;border:1px solid var(--line)"><table class="dtbl"><thead><tr><th>Date</th><th>Steps</th><th>Active Cal</th><th>Boxing</th><th>Goal</th></tr></thead><tbody id="tb4"><tr><td colspan="5" class="empty">No data</td></tr></tbody></table></div></div>
   <div class="sp"></div>
 </div>
 
@@ -1046,10 +1057,12 @@ textarea{resize:none;height:80px;font-size:14px;line-height:1.5}
     <div class="card">
       <div class="ctitle">Data Management</div>
       <div style="display:flex;flex-direction:column;gap:8px">
+        <button class="btn btn-ghost" onclick="repairNutritionData()" style="border-color:var(--teal);color:var(--teal)">Recover Missing Nutrition Data</button>
         <button class="btn btn-ghost" onclick="exportExcel()">Export to Excel</button>
         <button class="btn btn-ghost" onclick="exportCSV()">Export to CSV</button>
         <button class="btn btn-ghost" onclick="clearAll()" style="border-color:var(--red);color:var(--red)">Clear All Data</button>
       </div>
+      <div style="font-family:'DM Mono',monospace;font-size:9px;color:var(--ink3);margin-top:8px">Recover scans all logged meals still on this device and rebuilds any missing days in your nutrition history — safe to run anytime</div>
     </div>
     <div class="card">
       <div class="ctitle">About</div>
@@ -1140,6 +1153,58 @@ var DB = {
 };
 
 // ============================================================
+// DATA REPAIR — rebuilds the 'nutrition' summary array from every
+// individual meals-{date} record already in storage. Older app
+// versions only wrote to 'nutrition' once all 4 meals were logged
+// for a day, so days logged under that version can have real meal
+// data sitting in meals-{date} that never made it into 'nutrition' —
+// invisible to the deficit graph and the Excel/CSV export. This scans
+// every meals-{date} key present and recomputes 'nutrition' from
+// scratch so nothing logged is lost, without requiring re-logging.
+// ============================================================
+function repairNutritionData() {
+  var recovered = 0;
+  var rebuilt = [];
+  for (var i = 0; i < localStorage.length; i++) {
+    var key = localStorage.key(i);
+    if (!key || key.indexOf('pk_meals-') !== 0) continue;
+    var date = key.replace('pk_meals-', '');
+    if (!/^\d{4}-\d{2}-\d{2}$/.test(date)) continue;
+    var mD;
+    try { mD = JSON.parse(localStorage.getItem(key)); } catch(e) { continue; }
+    if (!mD) continue;
+
+    var tc=0,tp=0,tcarb=0,tfat=0,hasAny=false;
+    [1,2,3,4].forEach(function(n){ if(mD[n]){ tc+=mD[n].calories||0; tp+=mD[n].protein||0; tcarb+=mD[n].carbs||0; tfat+=mD[n].fat||0; hasAny=true; } });
+    if (mD.snack) { tc+=mD.snack.calories||0; tp+=mD.snack.protein||0; tcarb+=mD.snack.carbs||0; tfat+=mD.snack.fat||0; hasAny=true; }
+    if (mD.custom && mD.custom.length) { mD.custom.forEach(function(f){ tc+=f.calories||0; tp+=f.protein||0; tcarb+=f.carbs||0; tfat+=f.fat||0; }); hasAny=true; }
+    if (mD.eatOut && mD.eatOut.calories) { tc+=mD.eatOut.calories; hasAny=true; }
+
+    if (hasAny) {
+      rebuilt.push({date:date, calories:tc, protein:tp, carbs:tcarb, fat:tfat, water:0, ts:Date.now()});
+      recovered++;
+    }
+  }
+
+  if (!recovered) { toast('No additional data found to recover','err'); return 0; }
+
+  // Merge with existing nutrition array — keep richer/existing entries where water was logged,
+  // but always trust the recomputed totals since those reflect the actual meals stored.
+  var existing = DB.get('nutrition') || [];
+  var existingByDate = {};
+  existing.forEach(function(n){ existingByDate[n.date] = n; });
+  rebuilt.forEach(function(r){
+    var prevWater = existingByDate[r.date] ? (existingByDate[r.date].water || 0) : 0;
+    r.water = prevWater;
+    existingByDate[r.date] = r;
+  });
+  var merged = Object.keys(existingByDate).sort().map(function(d){ return existingByDate[d]; });
+  DB.set('nutrition', merged);
+  toast('Recovered '+recovered+' day(s) of nutrition data', 'ok');
+  return recovered;
+}
+
+// ============================================================
 // THEME
 // ============================================================
 function chartColor(varName) {
@@ -1158,7 +1223,7 @@ function toggleTheme() {
   if (toggle) toggle.checked = next === 'light';
   // Redraw any visible canvas charts so hardcoded-per-theme colors refresh immediately
   if (typeof refreshHome === 'function') refreshHome();
-  if (typeof refreshDataGraphs === 'function' && document.getElementById('sc-data') && document.getElementById('sc-data').classList.contains('active')) refreshDataGraphs();
+  if (typeof refreshDataGraphs === 'function' && document.getElementById('sc-dashboard') && document.getElementById('sc-dashboard').classList.contains('active')) refreshDataGraphs();
 }
 
 // ============================================================
@@ -1224,7 +1289,8 @@ function navGo(name, el) {
   if (name==='train') { window._userPickedSession = false; refreshDash(); updLastWorkout(); if (!window._exListBuilt) { buildExerciseList(); } }
   if (name==='steps') renderStepsHist();
   if (name==='weight') renderWeightScreen();
-  if (name==='data') { renderTables(); refreshDataGraphs(); }
+  if (name==='data') renderTables();
+  if (name==='dashboard') { refreshDataGraphs(); checkConcerns(); }
   if (name==='settings') updSettings();
   if (name==='nut') { updCalRemaining(); onNutDateChange(); }
 }
@@ -1232,7 +1298,7 @@ function navGo(name, el) {
 function drawerGo(name, el) {
   closeDrawer();
   // Map drawer names to nav
-  var navMap = {home:'ni-home',train:'ni-train',nut:'ni-nut',steps:'ni-steps',weight:'ni-weight',data:null,settings:null};
+  var navMap = {home:'ni-home',train:'ni-train',nut:'ni-nut',steps:'ni-steps',weight:'ni-weight',data:null,dashboard:null,settings:null};
   document.querySelectorAll('.screen').forEach(function(s){ s.classList.remove('active'); });
   document.querySelectorAll('.ni').forEach(function(n){ n.classList.remove('on'); });
   document.getElementById('sc-'+name).classList.add('active');
@@ -1242,7 +1308,8 @@ function drawerGo(name, el) {
   if (name==='train') refreshDash();
   if (name==='steps') renderStepsHist();
   if (name==='weight') renderWeightScreen();
-  if (name==='data') { renderTables(); refreshDataGraphs(); }
+  if (name==='data') renderTables();
+  if (name==='dashboard') { refreshDataGraphs(); checkConcerns(); }
   if (name==='settings') updSettings();
   if (name==='nut') { updCalRemaining(); onNutDateChange(); }
 }
@@ -2474,11 +2541,6 @@ function refreshHome() {
   if (calBar) calBar.style.width = Math.min(100,(avgCal/2065)*100) + '%';
   if (protBar) protBar.style.width = Math.min(100,(avgProt/190)*100) + '%';
   if (stepsBar) stepsBar.style.width = Math.min(100,(avgSteps/10000)*100) + '%';
-
-  // Draw chart
-  drawWeightChart(chartPeriod);
-  drawStepsChart(stepsChartPeriod);
-  drawBalanceChart(balanceChartPeriod);
 }
 
 function setChartPeriod(period, el) {
@@ -3299,9 +3361,142 @@ function drawLineChart(canvas, vals, dateLabels, color, fmtFn) {
 }
 
 function refreshDataGraphs() {
+  drawWeightChart(chartPeriod);
+  drawStepsChart(stepsChartPeriod);
+  drawBalanceChart(balanceChartPeriod);
   drawTonnageChart(tonnagePeriod);
   populateStrengthExSelect();
   drawConsistencyChart();
+}
+
+// ============================================================
+// CONCERNS ENGINE — rules-based checks across logged data,
+// surfaced at the top of the Dashboard. Each check only fires
+// when there's enough data to say something real — silence is
+// preferred over a guess dressed up as a warning.
+// ============================================================
+function checkConcerns() {
+  var panel = document.getElementById('concerns-panel');
+  if (!panel) return;
+  var concerns = [];
+
+  var weights = (DB.get('weights')||[]).slice().sort(function(a,b){ return a.date>b.date?1:-1; });
+  var nut = (DB.get('nutrition')||[]).slice().sort(function(a,b){ return a.date>b.date?1:-1; });
+  var sessions = (DB.get('sessions')||[]).filter(function(s){ return s.type!=='Rest'; });
+  var str = DB.get('strength')||[];
+  var bmr = DB.get('bmr')||0;
+
+  var now = new Date();
+  var d14 = new Date(now); d14.setDate(now.getDate()-14);
+  var recentNut = nut.filter(function(n){ return new Date(n.date) >= d14; });
+  var loggedDays14 = recentNut.length;
+  if (loggedDays14 < 8) {
+    concerns.push({
+      level: loggedDays14 < 4 ? 'high' : 'med',
+      title: 'Nutrition logging gaps',
+      body: loggedDays14 + ' of the last 14 days logged. Deficit tracking and the actual-vs-projected weight comparison get less reliable the more days are missing — recent trend calls should be read with that in mind.'
+    });
+  }
+
+  var recentW = weights.filter(function(w){ return new Date(w.date) >= d14; });
+  if (recentW.length < 8) {
+    concerns.push({
+      level: recentW.length < 4 ? 'high' : 'med',
+      title: 'Weight logging gaps',
+      body: recentW.length + ' of the last 14 days logged. Fewer entries means the trend average is more easily skewed by a single noisy reading.'
+    });
+  }
+
+  if (bmr && recentW.length >= 4 && recentNut.length >= 4) {
+    var result = buildBalanceData('m');
+    if (result.days && result.days.length >= 4) {
+      var avgDeficit = Math.round(result.days.reduce(function(t,d){return t+d.deficit;},0)/result.days.length);
+      var projWeeklyKg = (avgDeficit*7)/7700;
+      var wTrendN = Math.min(3, Math.floor(recentW.length/2))||1;
+      var wStartAvg = recentW.slice(0,wTrendN).reduce(function(t,w){return t+w.kg;},0)/wTrendN;
+      var wEndAvg = recentW.slice(-wTrendN).reduce(function(t,w){return t+w.kg;},0)/wTrendN;
+      var daySpan = (new Date(recentW[recentW.length-1].date)-new Date(recentW[0].date))/86400000 || 1;
+      var actualWeeklyChange = (wEndAvg-wStartAvg)*(7/daySpan);
+      var expectedLoss = -projWeeklyKg;
+      var diff = actualWeeklyChange - expectedLoss;
+      if (diff > 0.3) {
+        concerns.push({
+          level: diff > 0.6 ? 'high' : 'med',
+          title: 'Weight trend running behind projection',
+          body: 'Projected ~'+Math.abs(expectedLoss).toFixed(2)+'kg/wk loss from your logged deficit, actual trend is '+actualWeeklyChange.toFixed(2)+'kg/wk. Could be water retention masking real progress, under-logged intake, or burn estimate running high — worth another 1-2 weeks of consistent logging before adjusting anything.'
+        });
+      }
+    }
+  }
+
+  var d28 = new Date(now); d28.setDate(now.getDate()-28);
+  var recentSess = sessions.filter(function(s){ return new Date(s.date) >= d28; });
+  var sessPerWeek = recentSess.length / 4;
+  if (sessPerWeek < 3) {
+    concerns.push({
+      level: sessPerWeek < 2 ? 'high' : 'med',
+      title: 'Training frequency below target',
+      body: 'Averaging '+sessPerWeek.toFixed(1)+' sessions/week over the last 4 weeks, target is 4. In a deficit, missed sessions compound faster — less training stimulus makes it harder to hold onto muscle.'
+    });
+  }
+
+  if (str.length > 10) {
+    var counts = {};
+    str.forEach(function(s){ counts[s.exercise]=(counts[s.exercise]||0)+1; });
+    var topEx = Object.keys(counts).sort(function(a,b){return counts[b]-counts[a];})[0];
+    var exSets = str.filter(function(s){return s.exercise===topEx;});
+    var byDate = {};
+    exSets.forEach(function(s){ if(!byDate[s.date]||s.oneRM>byDate[s.date]) byDate[s.date]=s.oneRM; });
+    var pts = Object.keys(byDate).sort().map(function(d){return byDate[d];});
+    if (pts.length >= 6) {
+      var firstHalf = pts.slice(0, Math.floor(pts.length/2));
+      var secondHalf = pts.slice(Math.floor(pts.length/2));
+      var firstAvg = firstHalf.reduce(function(t,v){return t+v;},0)/firstHalf.length;
+      var secondAvg = secondHalf.reduce(function(t,v){return t+v;},0)/secondHalf.length;
+      var pctChange = ((secondAvg-firstAvg)/firstAvg)*100;
+      if (pctChange < -5) {
+        concerns.push({
+          level: pctChange < -10 ? 'high' : 'med',
+          title: 'Strength trending down on '+topEx,
+          body: 'Estimated 1RM down '+Math.abs(pctChange).toFixed(0)+'% comparing recent sessions to earlier ones. Some drop is normal in a deficit, but a consistent decline can mean the deficit is too aggressive or recovery isn\'t keeping up.'
+        });
+      }
+    }
+  }
+
+  if (!bmr) {
+    concerns.push({
+      level: 'med',
+      title: 'BMR not set',
+      body: 'Set your BMR in Settings to enable deficit tracking and the actual-vs-projected weight comparison.'
+    });
+  }
+
+  if (!concerns.length) {
+    panel.innerHTML = '<div class="card" style="padding:16px;border-color:rgba(0,214,143,.25);background:rgba(0,214,143,.04)">'
+      + '<div style="display:flex;align-items:center;gap:10px">'
+      + '<span style="font-size:18px">&#9989;</span>'
+      + '<div><div style="font-family:\'Bebas Neue\',sans-serif;font-size:15px;color:var(--green);letter-spacing:1px">No concerns flagged</div>'
+      + '<div style="font-family:\'DM Mono\',monospace;font-size:10px;color:var(--ink3);margin-top:2px">Logging and trends look consistent across the board</div></div>'
+      + '</div></div>';
+    return;
+  }
+
+  var order = {high:0, med:1};
+  concerns.sort(function(a,b){ return order[a.level]-order[b.level]; });
+
+  panel.innerHTML = concerns.map(function(c){
+    var color = c.level==='high' ? 'var(--red)' : 'var(--gold)';
+    var bg = c.level==='high' ? 'rgba(255,51,82,.06)' : 'rgba(255,204,68,.06)';
+    var border = c.level==='high' ? 'rgba(255,51,82,.2)' : 'rgba(255,204,68,.2)';
+    var icon = c.level==='high' ? '&#9888;' : '&#128161;';
+    return '<div class="card" style="padding:14px;margin-bottom:10px;border-color:'+border+';background:'+bg+'">'
+      + '<div style="display:flex;gap:10px">'
+      + '<span style="font-size:16px;flex-shrink:0">'+icon+'</span>'
+      + '<div><div style="font-family:\'Bebas Neue\',sans-serif;font-size:14px;color:'+color+';letter-spacing:.5px">'+c.title+'</div>'
+      + '<div style="font-family:\'DM Mono\',monospace;font-size:10px;color:var(--ink2);margin-top:4px;line-height:1.5">'+c.body+'</div></div>'
+      + '</div></div>';
+  }).join('');
 }
 
 // ============================================================
