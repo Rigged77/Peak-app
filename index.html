@@ -523,8 +523,8 @@ textarea{resize:none;height:80px;font-size:14px;line-height:1.5}
   <div id="panel-log">
     <div class="pad">
 
-      <!-- Date hidden but still tracked -->
-      <input type="date" id="l-date" style="display:none">
+      <!-- Session date -->
+      <div class="ig"><span class="lbl">Date</span><input type="date" id="l-date" onchange="onSessDateChange()"></div>
 
       <!-- Session type selector -->
       <div id="sess-type-step">
@@ -1355,8 +1355,10 @@ function selSessType(el) {
   updNextSession();
 }
 
-function onDateSelected() {
-  // Date auto-set to today, session shown immediately
+function onSessDateChange() {
+  window._exListBuilt = false; // force rebuild so the new date's sets load in
+  buildExerciseList();
+  updLastWorkout();
 }
 
 var SESSION_EXERCISES = {
@@ -1408,8 +1410,13 @@ function getExercisesForType(type) {
 // it's entered. No draft layer, no batch save, no data loss.
 // Key: sets-{date}-{type} -> { "ExerciseName": [{w,r}, {w,r}, ...] }
 // ============================================================
+function getSessDate() {
+  var el = document.getElementById('l-date');
+  return (el && el.value) || todayKey;
+}
+
 function getTodaySetsKey(type) {
-  return 'sets-' + todayKey + '-' + type;
+  return 'sets-' + getSessDate() + '-' + type;
 }
 
 function getTodaySets(type) {
@@ -1688,7 +1695,7 @@ function saveStrength() {
 // EXERCISES
 // ============================================================
 function finishSession() {
-  var date = todayKey;
+  var date = getSessDate();
   var type = getSessType();
   var todaySets = getTodaySets(type);
   var allStr = DB.get('strength') || [];
