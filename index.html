@@ -446,7 +446,7 @@ textarea{resize:none;height:80px;font-size:14px;line-height:1.5}
       <div style="position:absolute;top:0;left:0;right:0;height:2px;background:var(--gold)"></div>
       <div style="font-family:'DM Mono',monospace;font-size:9px;color:var(--ink3);text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px">Calories</div>
       <div style="font-family:'Bebas Neue',sans-serif;font-size:30px;color:var(--gold)" id="h-cal">-</div>
-      <div style="font-family:'DM Mono',monospace;font-size:10px;color:var(--ink3);margin-top:2px">kcal today &nbsp;/ 2065</div>
+      <div style="font-family:'DM Mono',monospace;font-size:10px;color:var(--ink3);margin-top:2px">kcal today &nbsp;/ <span id="h-cal-target">2000</span></div>
     </div>
     <div style="background:var(--card);border:1px solid var(--line);border-radius:16px;padding:14px;position:relative;overflow:hidden">
       <div style="position:absolute;top:0;left:0;right:0;height:2px;background:var(--blue)"></div>
@@ -594,10 +594,10 @@ textarea{resize:none;height:80px;font-size:14px;line-height:1.5}
     </div>
     <div class="cal-rem-box" style="margin-bottom:0;padding:10px 14px">
       <div>
-        <div class="cal-rem-v" id="cal-rem" style="color:var(--teal)">2065</div>
+        <div class="cal-rem-v" id="cal-rem" style="color:var(--teal)">2000</div>
         <div class="cal-rem-l">Calories remaining</div>
       </div>
-      <div class="cal-rem-r" id="cal-rem-r">0 of 2065 logged</div>
+      <div class="cal-rem-r" id="cal-rem-r">0 of 2000 logged</div>
     </div>
   </div>
 
@@ -608,18 +608,43 @@ textarea{resize:none;height:80px;font-size:14px;line-height:1.5}
     <div class="meal-hd" onclick="toggleMeal('m1-body')">
       <div class="meal-hd-l">
         <div class="meal-ico" style="background:rgba(255,204,68,.1);border:1px solid rgba(255,204,68,.2)">&#129371;</div>
-        <div><div class="meal-name">Breakfast</div><div class="meal-mac">58g P · 651 kcal</div></div>
+        <div><div class="meal-name">Breakfast (8am)</div><div class="meal-mac">25.6g P · 286 kcal</div></div>
       </div>
       <div class="meal-badge pending" id="m1-badge">Pending</div>
     </div>
     <div class="meal-body" id="m1-body">
       <div class="meal-divider"></div>
       <div class="meal-line"><span class="meal-line-name">4 large eggs scrambled (200g)</span><span class="meal-line-macro">25.6g P · 286 kcal</span></div>
-      <div class="meal-line"><span class="meal-line-name">MyProtein whey (1 scoop 30g)</span><span class="meal-line-macro">22g P · 118 kcal</span></div>
-      <div class="meal-line"><span class="meal-line-name">Whole milk 300ml</span><span class="meal-line-macro">9.9g P · 198 kcal</span></div>
-      <div class="meal-line"><span class="meal-line-name">Coffee + milk splash</span><span class="meal-line-macro">0.5g P · 12 kcal</span></div>
-      <div class="meal-line"><span class="meal-line-name">Butter 5g</span><span class="meal-line-macro">0g P · 37 kcal</span></div>
-      <button class="btn btn-fire" style="margin-top:13px;font-size:14px;padding:13px" onclick="logMeal(1,58,651,21,36)">Log Breakfast</button>
+      <button class="btn btn-fire" style="margin-top:13px;font-size:14px;padding:13px" onclick="logMeal(1,25.6,286,1.4,19)">Log Breakfast</button>
+    </div>
+  </div>
+
+  <!-- MEAL 1B: Mid-Morning (10:30am) -->
+  <div class="meal">
+    <div class="meal-hd" onclick="toggleMeal('m1b-body')">
+      <div class="meal-hd-l">
+        <div class="meal-ico" style="background:rgba(0,229,176,.1);border:1px solid rgba(0,229,176,.2)">&#127815;</div>
+        <div><div class="meal-name">Mid-Morning (10:30am)</div><div class="meal-mac" id="m1b-mac">29g P · 331 kcal</div></div>
+      </div>
+      <div class="meal-badge pending" id="m1b-badge">Pending</div>
+    </div>
+    <div class="meal-body" id="m1b-body">
+      <div class="meal-divider"></div>
+      <div class="meal-line"><span class="meal-line-name">Fat-free Greek yogurt 250g</span><span class="meal-line-macro">25.5g P · 148 kcal</span></div>
+      <div class="meal-line"><span class="meal-line-name">Maple syrup 10g</span><span class="meal-line-macro">0g P · 26 kcal</span></div>
+      <div style="margin-top:10px;margin-bottom:10px"><div class="ctitle" style="margin-bottom:6px">Recipe</div>
+        <div class="swap-row"><div class="swap-btn on" id="sw-m1b-berries" onclick="swapM1bRecipe('berries')">Berries + Cereal</div><div class="swap-btn" id="sw-m1b-banana" onclick="swapM1bRecipe('banana')">Banana + PB</div></div>
+      </div>
+      <div id="m1b-berries-lines">
+        <div class="meal-line"><span class="meal-line-name">Frozen mixed berries 80g</span><span class="meal-line-macro">1.1g P · 41 kcal</span></div>
+        <div class="meal-line"><span class="meal-line-name">Honey nut cereal 30g</span><span class="meal-line-macro">2.1g P · 117 kcal</span></div>
+      </div>
+      <div id="m1b-banana-lines" style="display:none">
+        <div class="meal-line"><span class="meal-line-name">Half banana (59g)</span><span class="meal-line-macro">0.6g P · 53 kcal</span></div>
+        <div class="meal-line"><span class="meal-line-name">Peanut butter 15g</span><span class="meal-line-macro">3.3g P · 90 kcal</span></div>
+        <div class="meal-line"><span class="meal-line-name">Dark chocolate 70-85% 12g</span><span class="meal-line-macro">0.9g P · 72 kcal</span></div>
+      </div>
+      <button class="btn btn-fire" style="margin-top:13px;font-size:14px;padding:13px" onclick="logMeal1b()">Log Mid-Morning</button>
     </div>
   </div>
 
@@ -879,6 +904,19 @@ textarea{resize:none;height:80px;font-size:14px;line-height:1.5}
   <!-- Concerns panel -->
   <div id="concerns-panel" style="margin:0 14px 14px"></div>
 
+  <!-- Screen Time -->
+  <div class="card" style="padding:16px">
+    <div class="ctitle" style="margin:0 0 10px">Screen Time</div>
+    <div class="r2">
+      <div><span class="lbl">Date</span><input type="date" id="sct-date"></div>
+      <div><span class="lbl">Minutes today</span><input type="number" id="sct-mins" placeholder="e.g. 210" oninput="saveScreenTime()"></div>
+    </div>
+    <div style="position:relative;height:120px;width:100%;margin-top:6px">
+      <canvas id="screentime-chart" style="position:absolute;inset:0;width:100%;height:100%"></canvas>
+      <div id="screentime-chart-empty" style="display:none;align-items:center;justify-content:center;height:100%;font-family:DM Mono,monospace;font-size:12px;color:var(--ink3)">Log screen time to see trend</div>
+    </div>
+  </div>
+
   <!-- Weight trend chart -->
   <div class="card" style="padding:16px">
     <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px">
@@ -948,7 +986,7 @@ textarea{resize:none;height:80px;font-size:14px;line-height:1.5}
         <button class="cperiod" id="bp-m" onclick="setBalanceChartPeriod('m',this)">30D</button>
       </div>
     </div>
-    <div style="font-family:'DM Mono',monospace;font-size:10px;color:var(--ink3);margin-bottom:12px">Burn (BMR + workout + steps) vs intake, per day</div>
+    <div style="font-family:'DM Mono',monospace;font-size:10px;color:var(--ink3);margin-bottom:12px">Burn (BMR + workout + steps + food digestion) vs intake, per day</div>
     <div id="balance-chart-wrap" style="position:relative;height:140px;width:100%">
       <canvas id="balance-chart" style="position:absolute;inset:0;width:100%;height:100%"></canvas>
       <div id="balance-chart-empty" style="display:none;position:absolute;inset:0;align-items:center;justify-content:center;font-family:DM Mono,monospace;font-size:12px;color:var(--ink3);text-align:center;padding:0 20px">Set your BMR in Settings, log active calories on Steps, and complete meals daily to see this</div>
@@ -1040,10 +1078,30 @@ textarea{resize:none;height:80px;font-size:14px;line-height:1.5}
   <div class="pad">
     <div class="card">
       <div class="ctitle">Metabolism</div>
-      <div style="font-family:'DM Mono',monospace;font-size:10px;color:var(--ink3);margin-bottom:10px">Your resting BMR — used with steps and active calories to calculate total daily burn</div>
+      <div style="font-family:'DM Mono',monospace;font-size:10px;color:var(--ink3);margin-bottom:10px">Your resting BMR — used with steps, active calories and food digestion cost to calculate total daily burn</div>
       <div class="ig"><span class="lbl">BMR (kcal/day)</span><input type="number" id="set-bmr" placeholder="e.g. 1910" oninput="saveBMR()"></div>
       <div class="ig"><span class="lbl">Step calorie rate (kcal per 1,000 steps)</span><input type="number" id="set-stepmult" placeholder="e.g. 50" step="0.1" oninput="saveStepMult()"></div>
-      <div style="font-family:'DM Mono',monospace;font-size:9px;color:var(--ink3);margin-top:6px">Formula: BMR + Workout Active Cal + (Steps × rate ÷ 1000)</div>
+      <div style="font-family:'DM Mono',monospace;font-size:9px;color:var(--ink3);margin-top:6px">Formula: BMR + Workout Active Cal + (Steps × rate ÷ 1000) + TEF (food digestion cost)</div>
+    </div>
+    <div class="card">
+      <div class="ctitle">Nutrition Target</div>
+      <div style="font-family:'DM Mono',monospace;font-size:10px;color:var(--ink3);margin-bottom:10px">Your daily calorie target — macro targets (protein/fat/carbs) recalculate automatically from this</div>
+      <div class="ig"><span class="lbl">Daily calorie target (kcal)</span><input type="number" id="set-caltarget" placeholder="2000" step="50" oninput="saveCalTarget()"></div>
+      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:4px">
+        <div style="text-align:center;background:var(--bg3);border-radius:10px;padding:10px 4px">
+          <div style="font-family:'Bebas Neue',sans-serif;font-size:18px;color:var(--teal)" id="tgt-prot-disp">-</div>
+          <div style="font-family:'DM Mono',monospace;font-size:9px;color:var(--ink3);margin-top:2px;text-transform:uppercase">Protein</div>
+        </div>
+        <div style="text-align:center;background:var(--bg3);border-radius:10px;padding:10px 4px">
+          <div style="font-family:'Bebas Neue',sans-serif;font-size:18px;color:var(--orange)" id="tgt-fat-disp">-</div>
+          <div style="font-family:'DM Mono',monospace;font-size:9px;color:var(--ink3);margin-top:2px;text-transform:uppercase">Fat</div>
+        </div>
+        <div style="text-align:center;background:var(--bg3);border-radius:10px;padding:10px 4px">
+          <div style="font-family:'Bebas Neue',sans-serif;font-size:18px;color:var(--blue)" id="tgt-carb-disp">-</div>
+          <div style="font-family:'DM Mono',monospace;font-size:9px;color:var(--ink3);margin-top:2px;text-transform:uppercase">Carbs</div>
+        </div>
+      </div>
+      <div style="font-family:'DM Mono',monospace;font-size:9px;color:var(--ink3);margin-top:8px">Split: 1.8g protein/kg bodyweight (from your latest logged weight), 25% of calories from fat, remainder as carbs</div>
     </div>
     <div class="card">
       <div class="ctitle">Google Sheets Sync</div>
@@ -1230,7 +1288,7 @@ function toggleTheme() {
 // STATE
 // ============================================================
 var exBlocks = [];
-var mData = {1:null,2:null,3:null,4:null,snack:null,custom:[],eatOut:null};
+var mData = {1:null,'1b':null,2:null,3:null,4:null,snack:null,custom:[],eatOut:null};
 var m3Base = 'roti';
 var m3Prot = 'chicken';
 var m3PortionG = 110;
@@ -1247,7 +1305,7 @@ var SESSION_ORDER = ['Upper 1 (Push)','Lower 1 (Quads)','Upper 2 (Pull)','Lower 
 function init() {
   var t = new Date();
   todayKey = t.toISOString().split('T')[0];
-  ['l-date','n-date','st-date','w-date'].forEach(function(id){
+  ['l-date','n-date','st-date','w-date','sct-date'].forEach(function(id){
     var el = document.getElementById(id);
     if (el) el.value = todayKey;
   });
@@ -1376,7 +1434,7 @@ var SESSION_EXERCISES = {
     {name:'Quad Extensions', sets:3, target:'10-12 reps', ico:'&#129461;'},
     {name:'Tibialis Raises', sets:3, target:'20-25 reps', ico:'&#129461;'},
     {name:'Cable Behind the Back Tricep Push', sets:3, target:'10-12 reps', ico:'&#128170;'},
-    {name:'Bicep Curls (Cable, EZ Bar)', sets:3, target:'8-12 reps', ico:'&#128170;'},
+    {name:'Dumbbell Bicep Curls', sets:3, target:'8-12 reps', ico:'&#128170;'},
     {name:'Bayesian Curls', sets:3, target:'10-12 reps', ico:'&#128170;'},
     {name:'Single Arm Tricep Pushdowns (Cable)', sets:3, target:'10-12 reps', ico:'&#128170;'}
   ],
@@ -1395,7 +1453,7 @@ var SESSION_EXERCISES = {
     {name:'Leg Curls (Seated)', sets:3, target:'8-12 reps', ico:'&#129461;'},
     {name:'Leg Press', sets:3, target:'8-10 reps', ico:'&#129461;'},
     {name:'Cable Behind the Back Tricep Push', sets:3, target:'10-12 reps', ico:'&#128170;'},
-    {name:'Bicep Curls (Cable, EZ Bar)', sets:3, target:'8-12 reps', ico:'&#128170;'},
+    {name:'Dumbbell Bicep Curls', sets:3, target:'8-12 reps', ico:'&#128170;'},
     {name:'Bayesian Curls', sets:3, target:'10-12 reps', ico:'&#128170;'},
     {name:'Single Arm Tricep Pushdowns (Cable)', sets:3, target:'10-12 reps', ico:'&#128170;'}
   ]
@@ -1836,7 +1894,7 @@ function onNutDateChange() {
   var nd=document.getElementById('n-date-disp');
   if (nd&&date) { var d=new Date(date); nd.textContent=d.toLocaleDateString('en-GB',{weekday:'short',day:'numeric',month:'short'}); }
   var saved=DB.get('meals-'+date);
-  if (saved) { mData=saved; } else { mData={1:null,2:null,3:null,4:null,snack:null,custom:[],eatOut:null}; }
+  if (saved) { mData=saved; } else { mData={1:null,'1b':null,2:null,3:null,4:null,snack:null,custom:[],eatOut:null}; }
   updMealUI(); updNutTot(); updEatOutUI();
 }
 
@@ -1853,6 +1911,47 @@ function logMeal(n,p,c,cb,f) {
   // Close the meal body
   var bodies=['m1-body','m2-body','m3-body','m4-body'];
   if (bodies[n-1]) { var b=document.getElementById(bodies[n-1]); if(b) b.classList.remove('open'); }
+}
+
+var m1bRecipe = 'berries';
+
+function swapM1bRecipe(v) {
+  m1bRecipe = v;
+  document.getElementById('sw-m1b-berries').className = 'swap-btn'+(v==='berries'?' on':'');
+  document.getElementById('sw-m1b-banana').className = 'swap-btn'+(v==='banana'?' on':'');
+  document.getElementById('m1b-berries-lines').style.display = v==='berries' ? 'block' : 'none';
+  document.getElementById('m1b-banana-lines').style.display = v==='banana' ? 'block' : 'none';
+  updM1bPreview();
+}
+
+function updM1bPreview() {
+  // Base: 250g fat-free Greek yogurt (25.5g P, 148 kcal, 9g C, 1g F) + 10g maple syrup (26 kcal, 6.7g C)
+  var baseP = 25.5, baseCal = 174, baseC = 15.7, baseF = 1.0;
+  var p, cal, c, f;
+  if (m1bRecipe === 'banana') {
+    // Half banana 59g + peanut butter 15g + dark chocolate 12g
+    p = baseP + 0.6 + 3.3 + 0.9;
+    cal = baseCal + 53 + 90 + 72;
+    c = baseC + 13.5 + 3.3 + 5.5;
+    f = baseF + 0.2 + 7.7 + 5.1;
+  } else {
+    // Frozen mixed berries 80g + honey nut cereal 30g
+    p = baseP + 1.1 + 2.1;
+    cal = baseCal + 41 + 117;
+    c = baseC + 6.0 + 24;
+    f = baseF + 0.6 + 1.3;
+  }
+  var el = document.getElementById('m1b-mac');
+  if (el) el.textContent = p.toFixed(1)+'g P · '+Math.round(cal)+' kcal';
+  return {p:p, cal:cal, c:c, f:f};
+}
+
+function logMeal1b() {
+  var m = updM1bPreview();
+  mData['1b'] = {protein: Math.round(m.p*10)/10, calories: Math.round(m.cal), carbs: Math.round(m.c*10)/10, fat: Math.round(m.f*10)/10};
+  saveMeals(); updMealUI(); updNutTot();
+  toast('Mid-Morning logged','ok');
+  var b=document.getElementById('m1b-body'); if(b) b.classList.remove('open');
 }
 
 function logMeal3() {
@@ -1915,6 +2014,8 @@ function updMealUI() {
     var b=document.getElementById('m'+n+'-badge');
     if (b) { b.textContent=mData[n]?'Logged':'Pending'; b.className='meal-badge '+(mData[n]?'logged':'pending'); }
   });
+  var b1b=document.getElementById('m1b-badge');
+  if (b1b) { b1b.textContent=mData['1b']?'Logged':'Pending'; b1b.className='meal-badge '+(mData['1b']?'logged':'pending'); }
   var sb=document.getElementById('snack-badge');
   if (sb) { sb.textContent=mData.snack?'Logged':'Pending'; sb.className='meal-badge '+(mData.snack?'logged':'pending'); }
 }
@@ -1922,6 +2023,7 @@ function updMealUI() {
 function updNutTot() {
   var tc=0,tp=0,tcarb=0,tfat=0;
   [1,2,3,4].forEach(function(n){ if(mData[n]){ tc+=mData[n].calories||0; tp+=mData[n].protein||0; tcarb+=mData[n].carbs||0; tfat+=mData[n].fat||0; } });
+  if (mData['1b']) { tc+=mData['1b'].calories||0; tp+=mData['1b'].protein||0; tcarb+=mData['1b'].carbs||0; tfat+=mData['1b'].fat||0; }
   if (mData.snack) { tc+=mData.snack.calories||0; tp+=mData.snack.protein||0; tcarb+=mData.snack.carbs||0; tfat+=mData.snack.fat||0; }
   if (mData.custom&&mData.custom.length) { mData.custom.forEach(function(f){ tc+=f.calories||0; tp+=f.protein||0; tcarb+=f.carbs||0; tfat+=f.fat||0; }); }
   if (mData.eatOut && mData.eatOut.calories) { tc+=mData.eatOut.calories; }
@@ -1932,7 +2034,7 @@ function updNutTot() {
   updCalRemaining(tc,tp);
   // Save as soon as anything is logged that day — intake is tracked as-logged,
   // not gated on completing all 4 meals. Partial days still count.
-  var hasAnyMeal = mData[1]||mData[2]||mData[3]||mData[4]||mData.snack||(mData.custom&&mData.custom.length)||mData.eatOut;
+  var hasAnyMeal = mData[1]||mData[2]||mData[3]||mData[4]||mData['1b']||mData.snack||(mData.custom&&mData.custom.length)||mData.eatOut;
   if (hasAnyMeal) {
     var water=parseFloat(document.getElementById('n-water').value)||0;
     var date=document.getElementById('n-date').value;
@@ -1951,8 +2053,9 @@ function updCalRemaining(tc,tp) {
     [1,2,3,4].forEach(function(n){ if(mData[n]){ tc+=mData[n].calories||0; tp+=mData[n].protein||0; } });
     if (mData.snack) { tc+=mData.snack.calories||0; tp+=mData.snack.protein||0; }
     if (mData.custom) { mData.custom.forEach(function(f){ tc+=f.calories||0; tp+=f.protein||0; }); }
+    if (mData.eatOut && mData.eatOut.calories) { tc+=mData.eatOut.calories; }
   }
-  var target=2065; var rem=target-tc;
+  var target=getCalTarget(); var rem=target-tc;
   var el=document.getElementById('cal-rem'); var elr=document.getElementById('cal-rem-r');
   if (!el) return;
   el.textContent=rem>0?rem:0;
@@ -1966,7 +2069,7 @@ function saveMeals() {
 }
 
 function resetMeals() {
-  mData={1:null,2:null,3:null,4:null,snack:null,custom:[],eatOut:null};
+  mData={1:null,'1b':null,2:null,3:null,4:null,snack:null,custom:[],eatOut:null};
   var date = (document.getElementById('n-date') && document.getElementById('n-date').value) || todayKey;
   DB.set('meals-'+date,mData);
   updMealUI(); updNutTot(); updEatOutUI();
@@ -2399,6 +2502,9 @@ function updSettings() {
   if (smEl) smEl.value = DB.get('stepMult') !== null && DB.get('stepMult') !== undefined ? DB.get('stepMult') : 50;
   var themeEl=document.getElementById('theme-toggle');
   if (themeEl) themeEl.checked = (DB.get('theme') === 'light');
+  var ctEl=document.getElementById('set-caltarget');
+  if (ctEl) ctEl.value = getCalTarget();
+  updMacroTargetDisplay();
 }
 function saveBMR() {
   var v = parseInt(document.getElementById('set-bmr').value) || 0;
@@ -2409,11 +2515,50 @@ function saveStepMult() {
   if (isNaN(v)) v = 50;
   DB.set('stepMult', v);
 }
+
+// ============================================================
+// CALORIE TARGET & MACRO SPLIT
+// ============================================================
+function getCalTarget() {
+  var t = DB.get('calTarget');
+  return (t && t > 0) ? t : 2000;
+}
+
+function saveCalTarget() {
+  var el = document.getElementById('set-caltarget');
+  var v = parseInt(el.value) || 2000;
+  DB.set('calTarget', v);
+  updMacroTargetDisplay();
+  updCalRemaining();
+}
+
+function calcMacroTargets() {
+  var target = getCalTarget();
+  var weights = DB.get('weights') || [];
+  var bw = weights.length ? weights[weights.length-1].kg : 85; // fallback if no weight logged yet
+  var protG = Math.round(bw * 1.8);
+  var protCal = protG * 4;
+  var fatCal = target * 0.25;
+  var fatG = Math.round(fatCal / 9);
+  var carbCal = Math.max(0, target - protCal - fatCal);
+  var carbG = Math.round(carbCal / 4);
+  return {calories: target, protein: protG, fat: fatG, carbs: carbG};
+}
+
+function updMacroTargetDisplay() {
+  var t = calcMacroTargets();
+  var pEl = document.getElementById('tgt-prot-disp');
+  var fEl = document.getElementById('tgt-fat-disp');
+  var cEl = document.getElementById('tgt-carb-disp');
+  if (pEl) pEl.textContent = t.protein + 'g';
+  if (fEl) fEl.textContent = t.fat + 'g';
+  if (cEl) cEl.textContent = t.carbs + 'g';
+}
 function clearAll() {
   if (!confirm('Clear all data? Cannot be undone.')) return;
   var keys=[]; for(var k in localStorage){ if(k.startsWith('pk_')) keys.push(k); }
   keys.forEach(function(k){ localStorage.removeItem(k); });
-  mData={1:null,2:null,3:null,4:null,snack:null,custom:[],eatOut:null};
+  mData={1:null,'1b':null,2:null,3:null,4:null,snack:null,custom:[],eatOut:null};
   refreshDash(); renderHistory(); renderStepsHist(); renderWeightScreen();
   toast('All data cleared','ok');
 }
@@ -2500,11 +2645,14 @@ function refreshHome() {
     [1,2,3,4].forEach(function(n){ if(meals[n]){ todayCal+=meals[n].calories||0; todayProt+=meals[n].protein||0; } });
     if (meals.snack) { todayCal+=meals.snack.calories||0; todayProt+=meals.snack.protein||0; }
     if (meals.custom) { meals.custom.forEach(function(f){ todayCal+=f.calories||0; todayProt+=f.protein||0; }); }
+    if (meals.eatOut && meals.eatOut.calories) { todayCal+=meals.eatOut.calories; }
   }
   var calEl = document.getElementById('h-cal');
   var protEl = document.getElementById('h-prot');
   if (calEl) calEl.textContent = todayCal || '-';
   if (protEl) protEl.textContent = todayProt ? todayProt + 'g' : '-';
+  var calTgtEl = document.getElementById('h-cal-target');
+  if (calTgtEl) calTgtEl.textContent = getCalTarget();
 
   // Today steps
   var steps = DB.get('steps') || [];
@@ -2545,7 +2693,7 @@ function refreshHome() {
   var protBar = document.getElementById('ws-prot-bar');
   var stepsBar = document.getElementById('ws-steps-bar');
   if (sessBar) sessBar.style.width = Math.min(100,(wkS.length/4)*100) + '%';
-  if (calBar) calBar.style.width = Math.min(100,(avgCal/2065)*100) + '%';
+  if (calBar) calBar.style.width = Math.min(100,(avgCal/getCalTarget())*100) + '%';
   if (protBar) protBar.style.width = Math.min(100,(avgProt/190)*100) + '%';
   if (stepsBar) stepsBar.style.width = Math.min(100,(avgSteps/10000)*100) + '%';
 }
@@ -2938,9 +3086,16 @@ function buildBalanceData(period) {
     var workoutActiveCal = s ? (s.activeCal || 0) : 0;
     var stepCount = s ? (s.steps || 0) : 0;
     var stepCal = (stepCount * stepMult) / 1000;
-    var burn = bmr + workoutActiveCal + stepCal;
-    var intake = nutByDate[d].calories || 0;
-    return {date: d, burn: Math.round(burn), intake: intake, deficit: Math.round(burn) - intake, hasSteps: !!s};
+    var n = nutByDate[d];
+    var intake = n.calories || 0;
+    // TEF (thermic effect of food) - macro-specific formula, more accurate than a flat 10%:
+    // protein costs ~25% of its calories to digest, carbs ~8%, fat ~3% (Biology Insights / TEF research consensus)
+    var protCal = (n.protein||0) * 4;
+    var carbCal = (n.carbs||0) * 4;
+    var fatCal = (n.fat||0) * 9;
+    var tef = (protCal*0.25) + (carbCal*0.08) + (fatCal*0.03);
+    var burn = bmr + workoutActiveCal + stepCal + tef;
+    return {date: d, burn: Math.round(burn), intake: intake, deficit: Math.round(burn) - intake, hasSteps: !!s, tef: Math.round(tef)};
   });
 
   if (!days.length) {
@@ -3228,6 +3383,42 @@ function drawConsistencyChart() {
   drawBarChart(canvas, weeks.map(function(w){ return w.count; }), weeks.map(function(w){ return w.label; }), '#4d9fff', function(v){ return v; }, true);
 }
 
+// ============================================================
+// SCREEN TIME
+// ============================================================
+function saveScreenTime() {
+  var date = document.getElementById('sct-date').value;
+  if (!date) return;
+  var mins = parseInt(document.getElementById('sct-mins').value) || 0;
+  var all = DB.get('screentime') || [];
+  var idx = all.findIndex(function(s){ return s.date===date; });
+  var rec = {date:date, minutes:mins, ts:Date.now()};
+  if (idx>=0) all[idx]=rec; else all.push(rec);
+  DB.set('screentime', all);
+  drawScreenTimeChart();
+}
+
+function drawScreenTimeChart() {
+  var canvas = document.getElementById('screentime-chart');
+  var emptyEl = document.getElementById('screentime-chart-empty');
+  if (!canvas) return;
+
+  var all = (DB.get('screentime')||[]).slice().sort(function(a,b){ return a.date>b.date?1:-1; });
+  var now = new Date();
+  var cutoff = new Date(now); cutoff.setDate(now.getDate()-14); cutoff.setHours(0,0,0,0);
+  var recent = all.filter(function(s){ return new Date(s.date) >= cutoff; });
+
+  if (!recent.length) {
+    canvas.style.display = 'none';
+    if (emptyEl) emptyEl.style.display = 'flex';
+    return;
+  }
+  canvas.style.display = 'block';
+  if (emptyEl) emptyEl.style.display = 'none';
+
+  drawBarChart(canvas, recent.map(function(s){ return s.minutes; }), recent.map(function(s){ return s.date; }), '#a78bfa', function(v){ return v>=60 ? (v/60).toFixed(1)+'h' : v+'m'; });
+}
+
 // ---- Shared chart primitives ----
 function drawBarChart(canvas, vals, dateLabels, color, fmtFn, isRawLabel) {
   var dpr = window.devicePixelRatio || 1;
@@ -3374,6 +3565,7 @@ function refreshDataGraphs() {
   drawTonnageChart(tonnagePeriod);
   populateStrengthExSelect();
   drawConsistencyChart();
+  drawScreenTimeChart();
 }
 
 // ============================================================
